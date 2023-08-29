@@ -5,10 +5,11 @@ import java.util.Date;
 public class PurchaseDTO {
 	private int orderNumber;
 	private String memberID;
-	private String apID;
+	private int apID;
 	private String apName;
 	private String apMfr;
-
+	private String optionName;
+	private String optionID;
 	private int orderQunatity;
 	private long orderPrice;
 	private Date orderDate;
@@ -16,13 +17,19 @@ public class PurchaseDTO {
 	public PurchaseDTO() {
 	}
 
-	public PurchaseDTO(String memberID, String apID, int orderQunatity, long orderPrice) {
+	public PurchaseDTO(String memberID, String optionID, int orderQunatity, long orderPrice) {
 		this.memberID = memberID;
-		this.apID = apID;
+		this.optionID = optionID;
 		this.orderQunatity = orderQunatity;
 		this.orderPrice = orderPrice;
 
 	}
+	public PurchaseDTO(String memberID, int apID) {
+		this.orderNumber = orderNumber;
+		this.apID = apID;
+
+	}
+	
 
 	public int getOrderNumber() {
 		return orderNumber;
@@ -40,11 +47,11 @@ public class PurchaseDTO {
 		this.memberID = memberID;
 	}
 
-	public String getApID() {
+	public int getApID() {
 		return apID;
 	}
 
-	public void setApID(String apID) {
+	public void setApID(int apID) {
 		this.apID = apID;
 	}
 
@@ -93,6 +100,22 @@ public class PurchaseDTO {
 
 	public void setApMfr(String apMfr) {
 		this.apMfr = apMfr;
+	}
+	
+	public String getOptionID() {
+		return optionID;
+	}
+
+	public void setOptionID(String optionID) {
+		this.optionID = optionID;
+	}
+
+	public String getOptionName() {
+		return optionName;
+	}
+
+	public void setOptionName(String optionName) {
+		this.optionName = optionName;
 	}
 
 }

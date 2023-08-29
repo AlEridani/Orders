@@ -19,25 +19,25 @@ public class PurchaseDAOImple implements PurchaseDAO {
 	private static final String COL_ORDER_NUMBER_SQE = "SEQ1.NEXTVAL";
 	private static final String COL_SESSION_ID = "MEMBER_ID";
 	private static final String COL_APID = "AP_ID";
+	private static final String COL_OPTION_ID = "OPTION_ID";
 	private static final String COL_AP_NAME = "AP_NAME";
 	private static final String COL_AP_MFR = "AP_MFR";
 	private static final String COL_ORDER_QUANTITY = "ORDER_QUANTITY";
 	private static final String COL_ORDER_PRICE = "ORDER_PRICE";
 	private static final String COL_DATE = "ORDER_DATE";
-
-	private static final String purchaseSql = "INSERT INTO " + TABLE_NAME +
+	
+	//sql문 새로 파야됨
+	private static final String PURCHASE_ORDER = "INSERT INTO " + TABLE_NAME +
 											" (" + COL_ORDER_NUMBER + ", " 
 											 + COL_SESSION_ID + ", " 
-											 + COL_APID + ", " 
-											 + COL_ORDER_QUANTITY + ", " 
-											 + COL_ORDER_PRICE + ")" 
+											 + COL_APID +")" 
 											 + " VALUES (" 
-								             + COL_ORDER_NUMBER_SQE + ", ?, ?, ?, ?)";
-
+								             + COL_ORDER_NUMBER_SQE + ", ?, ?)";
+								//주문번호,멤버id,apid
 	//a = APPLIANCE Table
 	//p = PURCHASE Table
-	private static final String purchaseSelect = "SELECT"
-												+ " a." + COL_APID 
+	private static final String PURCHASE_SELECT = "SELECT"
+
 												+ ", a." + COL_AP_NAME
 												+ ", a." + COL_AP_MFR 
 												+ ", p." + COL_DATE 
@@ -69,12 +69,12 @@ public class PurchaseDAOImple implements PurchaseDAO {
 		try {
 			DriverManager.registerDriver(new OracleDriver());
 			Connection conn = DriverManager.getConnection(URL, USER, PW);
-			PreparedStatement pstmt = conn.prepareStatement(purchaseSql);
-			System.out.println(purchaseSelect);
+			PreparedStatement pstmt = conn.prepareStatement(PURCHASE_ORDER);
+			
+			//멤버id,apid
 			pstmt.setString(1, dto.getMemberID());
-			pstmt.setString(2, dto.getApID());
-			pstmt.setInt(3, dto.getOrderQunatity());
-			pstmt.setLong(4, dto.getOrderPrice());
+			pstmt.setInt(2, dto.getApID());
+		
 			result = pstmt.executeUpdate();
 			
 			pstmt.close();
@@ -90,19 +90,19 @@ public class PurchaseDAOImple implements PurchaseDAO {
 
 	@Override
 	public ArrayList<PurchaseDTO> purchaseRecord(String id) {
-		System.out.println("구매기록 sql 문 실행" + purchaseSelect);
+		System.out.println("구매기록 sql 문 실행" + PURCHASE_SELECT);
 		ArrayList<PurchaseDTO> list = new ArrayList<>();
 		try {
 			DriverManager.registerDriver(new OracleDriver());
 			Connection conn = DriverManager.getConnection(URL, USER, PW);
-			PreparedStatement pstmt = conn.prepareStatement(purchaseSelect);
+			PreparedStatement pstmt = conn.prepareStatement(PURCHASE_SELECT);
 			pstmt.setString(1, id);
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				PurchaseDTO dto = new PurchaseDTO();
 				dto.setOrderNumber(rs.getInt(COL_ORDER_NUMBER));
 				dto.setOrderDate(rs.getDate(COL_DATE));
-				dto.setApID(rs.getString(COL_APID));
+				dto.setApID(rs.getInt(COL_APID));
 				dto.setApName(rs.getString(COL_AP_NAME));
 				dto.setApMfr(rs.getString(COL_AP_MFR));
 				dto.setOrderQunatity(rs.getInt(COL_ORDER_QUANTITY));
