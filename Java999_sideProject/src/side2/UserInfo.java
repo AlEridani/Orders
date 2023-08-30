@@ -38,7 +38,7 @@ public class UserInfo {
 		session = Session.getInstance();
 
 		frame = new JFrame();
-		frame.setBounds(100, 100, 362, 990);
+		frame.setBounds(100, 100, 362, 881);
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 
@@ -122,7 +122,7 @@ public class UserInfo {
 				}
 			}
 		});
-		btnNewButton_1.setBounds(0, 928, 346, 23);
+		btnNewButton_1.setBounds(0, 819, 346, 23);
 		frame.getContentPane().add(btnNewButton_1);
 		
 		lblNewLabel_6 = new JLabel("주문번호");
@@ -134,7 +134,7 @@ public class UserInfo {
 		
 		lblApName = new JLabel();
 		lblApName.setFont(new Font("굴림", Font.PLAIN, 14));
-		lblApName.setBounds(22, 502, 254, 23);
+		lblApName.setBounds(22, 480, 254, 40);
 		frame.getContentPane().add(lblApName);
 		
 		
@@ -156,13 +156,13 @@ public class UserInfo {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			String date = sdf.format(dto.getOrderDate());
 			lblOrderDate.setText(date);
-			lblApName.setText(dto.getApName());
+			lblApName.setText("<HTML>" + dto.getApName() + "</HTML>");
 			lblNewLabel_6.setText(String.valueOf("주문번호 " + dto.getOrderNumber()));
 			list.clear();
 			list = dao.lastOrder(session.getDto().getMemberID());
 			
 			
-			for(int i =0; i < list.size();i++) {//y값만 조지기
+			for(int i =0; i < list.size();i++) {
 				JLabel lblNewLabel_3 = new JLabel(list.get(i).getOptionName());
 				lblNewLabel_3.setBounds(22, y, 274, 36);
 				frame.getContentPane().add(lblNewLabel_3);

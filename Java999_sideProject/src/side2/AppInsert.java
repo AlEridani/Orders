@@ -216,9 +216,9 @@ public class AppInsert {
 		} else {
 			ApplianceDTO dto = new ApplianceDTO(apName, apMfr, apInfo);
 			apId = dao.appInsert(dto);
-
+			System.out.println("clickedCount : " + clickedCount);
 			for (int i = 0; i < clickedCount + 1; i++) {
-
+				
 				String optionId = optionIdFields.get(i).getText();
 				String optionName = optionNameFields.get(i).getText();
 				int price = Integer.parseInt(priceFields.get(i).getText());
@@ -277,18 +277,13 @@ public class AppInsert {
 			textStock.setBounds(TEST_STOCK_XPOS, y, TEXT_STOCK_WIDTH, HEIGHT);
 			panel.add(textStock);
 
-			// 데이터 input부분
+		
 			tempOptionIdFields.add(textOptionId);
 			tempOptionNameFields.add(textOptionName);
 			tempPriceFields.add(textPrice);
 			tempStockFields.add(textStock);
 
-			// 추가버튼누르면 초기화
-			optionIdFields.clear();
-			optionNameFields.clear();
-			priceFields.clear();
-			stockFields.clear();
-
+		
 			panel.setPreferredSize(new Dimension(950, y + HEIGHT + 10));
 			panel.repaint();
 			scrollPane_1.revalidate();
