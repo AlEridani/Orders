@@ -55,8 +55,7 @@ public class AppInsert {
 	private int TEXT_NAME_WIDTH = 200;
 	private int TEXT_PRICE_WIDTH = 120;
 	private int TEXT_STOCK_WIDTH = 100;
-	
-	
+
 	JScrollPane scrollPane_1;
 
 	List<JTextField> optionIdFields = new ArrayList<>();
@@ -202,14 +201,12 @@ public class AppInsert {
 		String apInfo = textAppInfo.getText();
 		int apId = -1;
 		ApplianceDAO dao = ApplianceDAOImple.getInstance();
-
+		int result = -1;
+		
 		if (apInfo.isBlank()) {
 			apInfo = "상품 정보가 없습니다";
 		}
 
-		// apName이 빈칸이 아니면서 mfr가 빈칸 이 아니면
-
-		// false false false
 		if ((apName.isBlank() || apMfr.isBlank())) {
 			JOptionPane.showMessageDialog(null, "제목과 제조사를 입력해 주세요");
 		} else if (insertToken == false) {
@@ -217,31 +214,28 @@ public class AppInsert {
 		} else {
 			ApplianceDTO dto = new ApplianceDTO(apName, apMfr, apInfo);
 			apId = dao.appInsert(dto);
-		
+
 			for (int i = 0; i < clickedCount + 1; i++) {
-				
+
 				String optionId = optionIdFields.get(i).getText();
 				String optionName = optionNameFields.get(i).getText();
 				int price = Integer.parseInt(priceFields.get(i).getText());
 				int stock = Integer.parseInt(stockFields.get(i).getText());
-				
-				OptionDAO odao = OptionDAOImple.getInstance();
-				System.out.println("odto 확인 : " + optionId + optionName + price + stock);
-				OptionDTO odto = new OptionDTO(optionId, optionName, price, stock, apId, (i+1));
-				
-				int result = odao.insert(odto);
 
-				if (result == 1) {
-					System.out.println("입력 성공");
-					JOptionPane.showMessageDialog(null, "등록에 성공했습니다");
-					frame.dispose();
-				} else {
-					System.out.println("입력 실패");
-					
+				OptionDAO odao = OptionDAOImple.getInstance();
+				OptionDTO odto = new OptionDTO(optionId, optionName, price, stock, apId, (i + 1));
+
+				result = odao.insert(odto);
+				if (result == -1) {
+					JOptionPane.showMessageDialog(null, "등록에 실패했습니다");
 				}
-			}
+			} // end for
+		} // end if~else
+		if (result == 1) {
+			JOptionPane.showMessageDialog(null, "등록 성공");
 		}
-	}
+
+	}// end appInsert
 
 	public void addOption(int count) {// 옵션 추가는 5번까지만 가능하게
 
@@ -286,8 +280,8 @@ public class AppInsert {
 			tempOptionNameFields.add(textOptionName);
 			tempPriceFields.add(textPrice);
 			tempStockFields.add(textStock);
-			
-			//추가버튼누르면 초기화
+
+			// 추가버튼누르면 초기화
 			optionIdFields.clear();
 			optionNameFields.clear();
 			priceFields.clear();

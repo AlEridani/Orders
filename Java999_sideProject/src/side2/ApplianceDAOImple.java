@@ -51,10 +51,12 @@ public class ApplianceDAOImple implements ApplianceDAO {
 										+ " JOIN APP_OPTION O ON A.AP_ID = O.AP_ID"
 										+ " WHERE O.POSITION = 1 AND " + COL_DELETED + " = 0";
  	
-	private static String appSerch = "SELECT * FROM " + TABLE_NAME 
-								   + " WHERE " + COL_NAME + " LIKE ?"
-								   + " OR " + COL_MFR + " LIKE ?" 
-								   + " AND " + COL_DELETED + " = 0";
+	private static String appSerch = "SELECT A."+ COL_NAME + ", A."+ COL_ID + ", A."+ COL_MFR + ", O.PRICE"
+									+ " FROM " + TABLE_NAME + " A"
+									+ " JOIN APP_OPTION O ON A.AP_ID = O.AP_ID"
+									+ " WHERE O.POSITION = 1 AND " + COL_DELETED + " = 0"
+									+ " AND A." + COL_NAME + " LIKE ?";
+
 
 	private static String appInfo = "SELECT * FROM " + TABLE_NAME + " WHERE " + COL_ID + " = ?";
 
@@ -65,7 +67,8 @@ public class ApplianceDAOImple implements ApplianceDAO {
 
 	private static String appUpdate = "UPDATE " + TABLE_NAME + " SET "
 									  + COL_NAME + " = ?, "
-									  + COL_MFR + " = ? "
+									  + COL_MFR + " = ?, "
+									  + COL_INFO + " = ? "
 									  + "WHERE AP_ID = ?";
 	//나중에 휴지통 기능 구현한다면 사용
 	private static String appDelete = "DELETE FROM " + TABLE_NAME + " WHERE " + COL_ID + " = ?";
@@ -87,52 +90,35 @@ public class ApplianceDAOImple implements ApplianceDAO {
 
 	@Override
 	public int appInsert(ApplianceDTO dto) {
-		int result = -1;
-		try {
-			DriverManager.registerDriver(new OracleDriver());
-			Connection conn = DriverManager.getConnection(URL, USER, PW);
-			PreparedStatement  pstmt = conn.prepareCall(appInsert);
-			System.out.println("실행 sql문 확인 : " + appInsert);
-			
-			String apName = dto.getApName().toUpperCase();
-			String apMfr = dto.getApMfr().toUpperCase();
-			System.out.println("apName 확인 " + apName);
-			System.out.println("apMfr 확인 " + apMfr);
-			System.out.println("ApInfo 확인 " + dto.getApInfo());
-			pstmt.setString(1, apName);//전부 대문자로 바꿔서 넣었어야 했음
-			pstmt.setString(2, apMfr);
-			pstmt.setString(3, dto.getApInfo());
-			
-			
-			pstmt.executeUpdate();
-			
-			pstmt = conn.prepareCall(appColId);
-			System.out.println("인서트후 id가져오는 select 문 확인 " + appColId);
-			pstmt.setString(1, apName);//전부 대문자로 바꿔서 넣었어야 했음
-			pstmt.setString(2, apMfr);
-			pstmt.setString(3, dto.getApInfo());
-			
-			ResultSet rs = pstmt.executeQuery();
-			
-			if(rs.next()) {
-				result = rs.getInt(COL_ID);
-			}else {
-				System.out.println("rs실패 col_id 못가져옴");
-			}
-			rs.close();
-			pstmt.close();
-			conn.close();
+	    int result = -1;
+	    try {
+	        DriverManager.registerDriver(new OracleDriver());
+	        Connection conn = DriverManager.getConnection(URL, USER, PW);
 
-			return result;
-		} catch (SQLException e) {
-			e.printStackTrace();
+	        String callProcedure = "{ call insert_appliance_and_return_id(?, ?, ?, ?) }"; 
+	        CallableStatement cstmt = conn.prepareCall(callProcedure);
 
-			
-		}
+	        String apName = dto.getApName().toUpperCase();
+	        String apMfr = dto.getApMfr().toUpperCase();
 
+	        cstmt.setString(1, apName);
+	        cstmt.setString(2, apMfr);
+	        cstmt.setString(3, dto.getApInfo());
+	        cstmt.registerOutParameter(4, java.sql.Types.INTEGER); 
 
+	        cstmt.executeUpdate();
 
-		return result;
+	        result = cstmt.getInt(4); // Retrieve the generated AP_ID
+	        System.out.println("ap_id 확인용 : " + result);
+
+	        cstmt.close();
+	        conn.close();
+
+	        return result;
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return result;
 	}
 
 	@Override
@@ -178,7 +164,7 @@ public class ApplianceDAOImple implements ApplianceDAO {
 			System.out.println("sql문 : " + appSerch);
 			System.out.println("검색text : " + apName);
 			pstmt.setString(1, apName);
-			pstmt.setString(2, apName);
+		
 			ResultSet rs = pstmt.executeQuery();
 
 			list = new ArrayList<>();
@@ -188,6 +174,7 @@ public class ApplianceDAOImple implements ApplianceDAO {
 				dto.setApID(rs.getInt(COL_ID));
 				dto.setApName(rs.getString(COL_NAME));
 				dto.setApMfr(rs.getString(COL_MFR));
+				dto.setMainPrice(rs.getInt("PRICE"));
 				list.add(dto);
 			}
 
@@ -219,7 +206,8 @@ public class ApplianceDAOImple implements ApplianceDAO {
 			System.out.println("쿼리문 확인 : " + appUpdate);
 			pstmt.setString(1, dto.getApName());
 			pstmt.setString(2, dto.getApMfr());
-			pstmt.setInt(3, dto.getApID());
+			pstmt.setString(3, dto.getApInfo());
+			pstmt.setInt(4, dto.getApID());
 
 			result = pstmt.executeUpdate();
 
@@ -255,6 +243,8 @@ public class ApplianceDAOImple implements ApplianceDAO {
 		return result;
 	}//end appDelete
 
+	
+	
 	@Override
 	public ApplianceDTO appInfo(String apId) {
 		ApplianceDTO dto = new ApplianceDTO();

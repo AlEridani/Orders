@@ -25,7 +25,7 @@ public class PurchaseDTO {
 
 	}
 	public PurchaseDTO(String memberID, int apID) {
-		this.orderNumber = orderNumber;
+		this.memberID = memberID;
 		this.apID = apID;
 
 	}

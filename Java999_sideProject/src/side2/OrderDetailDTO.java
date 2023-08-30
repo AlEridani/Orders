@@ -1,16 +1,28 @@
 package side2;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 public class OrderDetailDTO {
 	private int detailId;
 	private int orderNumber;
+	private Date orderDate;
+	private int apId;
+	private String mfr;
 	private String optionId;
+	private String optionName;
 	private int quantity;
 	private int price;
+	private String apName;
 	
-    private Map<OptionDTO, Integer> orderOptions = new HashMap<>();
+    public String getApName() {
+		return apName;
+	}
+	public void setApName(String apName) {
+		this.apName = apName;
+	}
+	private Map<OptionDTO, Integer> orderOptions = new HashMap<>();
 
 	public Map<OptionDTO, Integer> getOrderOptions() {
 		return orderOptions;
@@ -72,6 +84,31 @@ public class OrderDetailDTO {
 	
 	public OrderDetailDTO() {
 	}
+	public Date getOrderDate() {
+		return orderDate;
+	}
+	public void setOrderDate(Date orderDate) {
+		this.orderDate = orderDate;
+	}
+	public int getApId() {
+		return apId;
+	}
+	public void setApId(int apId) {
+		this.apId = apId;
+	}
+	public String getMfr() {
+		return mfr;
+	}
+	public void setMfr(String mfr) {
+		this.mfr = mfr;
+	}
+	public String getOptionName() {
+		return optionName;
+	}
+	public void setOptionName(String optionName) {
+		this.optionName = optionName;
+	}
+	
 	
 	
 }

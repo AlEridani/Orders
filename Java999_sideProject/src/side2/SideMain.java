@@ -138,7 +138,7 @@ public class SideMain {
 			}
 		});
 		inven.setBackground(Color.LIGHT_GRAY);
-		inven.setBounds(1, 38, 570, 405);
+		inven.setBounds(-19, 26, 570, 405);
 		frame.getContentPane().add(inven);
 
 		JScrollPane scrollPane = new JScrollPane(inven);
@@ -195,7 +195,7 @@ public class SideMain {
 
 		lblId = new JLabel("아이디 들어가는 자리");
 		lblId.setHorizontalAlignment(JLabel.RIGHT);
-		lblId.setBounds(687, 13, 168, 15);
+		lblId.setBounds(640, 13, 168, 15);
 		frame.getContentPane().add(lblId);
 
 		btnLogout = new JButton("로그아웃");
@@ -279,7 +279,7 @@ public class SideMain {
 			btnAdmin.setVisible(false);
 			btnSignup.setVisible(true);
 			btnNewButton.setVisible(true);
-			btnAppInsert.setVisible(true);// 변경후 다시 false로 돌려둬야됨
+			btnAppInsert.setVisible(false);
 			lblId.setVisible(false);
 			btnLogout.setVisible(false);
 		} else if (session.getGrade().equals("USER")) {// 회원
@@ -355,7 +355,6 @@ public class SideMain {
 	public void appTableOutput() {
 		ApplianceDAO dao = ApplianceDAOImple.getInstance();
 		appList = dao.tableSelect(); // 데이터 조회
-
 		table();
 
 	}

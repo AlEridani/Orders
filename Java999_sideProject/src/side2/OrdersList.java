@@ -8,6 +8,7 @@ import java.awt.event.WindowListener;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -28,7 +29,6 @@ public class OrdersList {
 	private int count = 0;
 	private JButton btnNewButton;
 	private JScrollPane scrollPane;
-	
 
 	public OrdersList() {
 		initialize();
@@ -46,10 +46,8 @@ public class OrdersList {
 			public void actionPerformed(ActionEvent e) {
 				count++;
 				ordersHistory(count);
-				SwingUtilities.invokeLater(() ->
-				scrollPane.getVerticalScrollBar().
-				setValue(scrollPane.getVerticalScrollBar().getMaximum())
-				);
+				SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar()
+						.setValue(scrollPane.getVerticalScrollBar().getMaximum()));
 			}
 		});
 		btnNewButton.setBounds(22, 437, 289, 23);
@@ -80,21 +78,27 @@ public class OrdersList {
 	public void ordersHistory(int clicked) {
 
 		Session session = Session.getInstance();
-		PurchaseDAO dao = PurchaseDAOImple.getInstance();
-		ArrayList<PurchaseDTO> list = dao.purchaseRecord(session.getDto().getMemberID());
-
+		OrderDetailDAO dao = OrderDetailDAOImple.getInstance();
+		
+		LinkedHashMap<Integer, OrderDetailDTO> uniqueOrders = new LinkedHashMap<>();
+		ArrayList<OrderDetailDTO> dataList = dao.orderSelect(session.getDto().getMemberID());
+		for(OrderDetailDTO dto : dataList){
+		    uniqueOrders.put(dto.getOrderNumber(), dto);
+		}
+		ArrayList<OrderDetailDTO> list = new ArrayList<>(uniqueOrders.values());
+		
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
 		int separatorSpacing = 15;
+		
 		int size = list.size();
-
 		int page = 3;
 		int start = size - 1 - (page * clicked);// 49 46 43 40 size는 50
 		int end = start - page;// 46 43 40
 
 		JLabel[] lblName = new JLabel[size];
 		JLabel[] lblOrderDate = new JLabel[size];
-		JLabel[] lblQuantity = new JLabel[size];
+		JLabel[] lblOption = new JLabel[size];
 		JLabel[] lblOrderNumber = new JLabel[size];
 		for (int i = start; i > end; i--) {
 			if (i < 0) {
@@ -108,23 +112,33 @@ public class OrdersList {
 			lblOrderNumber[i] = new JLabel("주문번호 : " + String.valueOf(list.get(i).getOrderNumber()));
 			panel.add(lblOrderNumber[i]);
 
+			lblName[i] = new JLabel(list.get(i).getApName());
+			panel.add(lblName[i]);
+
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			String date = sdf.format(list.get(i).getOrderDate());
 			lblOrderDate[i] = new JLabel(date);
 			panel.add(lblOrderDate[i]);
 
-			lblName[i] = new JLabel(list.get(i).getApMfr() + " " + list.get(i).getApName());
-			panel.add(lblName[i]);
+			////// 옵션수만큼 반복 시작해야하는곳
 
-			lblQuantity[i] = new JLabel(numberFormat(list.get(i).getOrderQunatity()) + "개 "
-					+ numberFormat((long) list.get(i).getOrderPrice()) + " 원");
+			ArrayList<OrderDetailDTO> optionList = dao.optionList(session.getDto().getMemberID(),
+					list.get(i).getOrderNumber());
+			System.out.println("옵션 리스트 확인 : " + optionList.size());
+			for (int j = 0; j < optionList.size(); j++) {
+				JLabel lblOptionName = new JLabel(optionList.get(j).getOptionName());
+				panel.add(lblOptionName);
 
-			panel.add(lblQuantity[i]);
+				String priceAndQunatity = optionList.get(j).getQuantity() + "개/"
+						+ numberFormat(optionList.get(j).getPrice() * optionList.get(j).getQuantity()) + "원";
+				JLabel lblPrice = new JLabel(priceAndQunatity);
+				panel.add(lblPrice);
+			}
 
+			///////////////
 			panel.add(Box.createVerticalStrut(separatorSpacing));
 			JSeparator separator = new JSeparator();
 			panel.add(separator);
-
 			panel.add(Box.createVerticalStrut(separatorSpacing));
 
 		} // end for
@@ -143,7 +157,6 @@ public class OrdersList {
 		return formattedPrice;
 	}
 
-	
 	public void addFrameCloseListener(WindowListener listener) {
 		frame.addWindowListener(listener);
 	}// end addFrameCloseListener

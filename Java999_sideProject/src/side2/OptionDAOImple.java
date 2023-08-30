@@ -47,6 +47,10 @@ public class OptionDAOImple implements OptionDAO {
 												+ COL_PRICE + " = ?, "
 												+ COL_STOCK + " = ?"
 												+ " WHERE " + COL_ID +" = ?";
+	
+	private static final String OPTION_STOCK_UPDATE = "UPDATE " + TABLE_NAME + " SET "
+													  + COL_STOCK + " = ?"
+													  + " WHERE " + COL_ID + "= ?";
 											
 	//1네임 2가격 3 재고 4 where optionid
 	
@@ -150,6 +154,32 @@ public class OptionDAOImple implements OptionDAO {
 				
 
 		return list;
+	}
+
+	@Override
+	public int stockUpdate(OptionDTO dto) {
+		int result = -1;
+			
+			try {
+				DriverManager.registerDriver(new OracleDriver());
+				Connection conn = DriverManager.getConnection(URL, USER, PW);
+				PreparedStatement pstmt = conn.prepareStatement(OPTION_STOCK_UPDATE);
+				System.out.println("업데이트 sql 문 확인 : " + OPTION_UPDATE);
+				pstmt.setInt(1, dto.getStock());
+				pstmt.setString(2, dto.getOptionId());
+				
+				result = pstmt.executeUpdate();
+				
+				pstmt.close();
+				conn.close();
+				return result;
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		return result;
+		
 	}
 
 }

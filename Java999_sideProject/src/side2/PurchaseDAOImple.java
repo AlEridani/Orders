@@ -1,9 +1,11 @@
 package side2;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import oracle.jdbc.driver.OracleDriver;
@@ -13,7 +15,7 @@ public class PurchaseDAOImple implements PurchaseDAO {
 	private static final String URL = "jdbc:oracle:thin:@localhost:1521:xe";
 	private static final String USER = "side3";
 	private static final String PW = "123";
-	
+
 	private static final String TABLE_NAME = "PURCHASE";
 	private static final String COL_ORDER_NUMBER = "ORDER_NUMBER";
 	private static final String COL_ORDER_NUMBER_SQE = "SEQ1.NEXTVAL";
@@ -25,30 +27,19 @@ public class PurchaseDAOImple implements PurchaseDAO {
 	private static final String COL_ORDER_QUANTITY = "ORDER_QUANTITY";
 	private static final String COL_ORDER_PRICE = "ORDER_PRICE";
 	private static final String COL_DATE = "ORDER_DATE";
-	
-	//sql문 새로 파야됨
-	private static final String PURCHASE_ORDER = "INSERT INTO " + TABLE_NAME +
-											" (" + COL_ORDER_NUMBER + ", " 
-											 + COL_SESSION_ID + ", " 
-											 + COL_APID +")" 
-											 + " VALUES (" 
-								             + COL_ORDER_NUMBER_SQE + ", ?, ?)";
-								//주문번호,멤버id,apid
-	//a = APPLIANCE Table
-	//p = PURCHASE Table
+
+	// sql문 새로 파야됨
+	private static final String PURCHASE_ORDER = "INSERT INTO " + TABLE_NAME + " (" + COL_ORDER_NUMBER + ", "
+												+ COL_SESSION_ID + ", " + COL_APID + ")" + " VALUES (" + COL_ORDER_NUMBER_SQE + ", ?, ?)"
+												+ " RETURNING " + COL_ORDER_NUMBER + " INTO ?";
+	// 주문번호,멤버id,apid
+	// a = APPLIANCE Table
+	// p = PURCHASE Table
 	private static final String PURCHASE_SELECT = "SELECT"
 
-												+ ", a." + COL_AP_NAME
-												+ ", a." + COL_AP_MFR 
-												+ ", p." + COL_DATE 
-												+ ", p." + COL_ORDER_QUANTITY 
-												+ ", p." + COL_ORDER_PRICE 
-												+ ", p." + COL_ORDER_NUMBER
-												+ " FROM APPLIANCE a join " 
-												+ TABLE_NAME + " p" 
-												+ " ON a." + COL_APID + " = p." + COL_APID 
-												+ " WHERE p."+ COL_SESSION_ID + " = ?"
-												+ " ORDER BY " + COL_ORDER_NUMBER;
+			+ ", a." + COL_AP_NAME + ", a." + COL_AP_MFR + ", p." + COL_DATE + ", p." + COL_ORDER_QUANTITY + ", p."
+			+ COL_ORDER_PRICE + ", p." + COL_ORDER_NUMBER + " FROM APPLIANCE a join " + TABLE_NAME + " p" + " ON a."
+			+ COL_APID + " = p." + COL_APID + " WHERE p." + COL_SESSION_ID + " = ?" + " ORDER BY " + COL_ORDER_NUMBER;
 
 	private static PurchaseDAOImple instance = null;
 
@@ -65,27 +56,37 @@ public class PurchaseDAOImple implements PurchaseDAO {
 
 	@Override
 	public int purchase(PurchaseDTO dto) {
-		int result = -1;
-		try {
-			DriverManager.registerDriver(new OracleDriver());
-			Connection conn = DriverManager.getConnection(URL, USER, PW);
-			PreparedStatement pstmt = conn.prepareStatement(PURCHASE_ORDER);
-			
-			//멤버id,apid
-			pstmt.setString(1, dto.getMemberID());
-			pstmt.setInt(2, dto.getApID());
-		
-			result = pstmt.executeUpdate();
-			
-			pstmt.close();
-			conn.close();
-			
-			return result;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	    int result = -1;
+	    CallableStatement cstmt = null;
+	    try {
+	        DriverManager.registerDriver(new OracleDriver());
+	        Connection conn = DriverManager.getConnection(URL, USER, PW);
+	        cstmt = conn.prepareCall("{ call ins_purchase_return_ordnum(?, ?, ?) }");
 
-		return result;
+	        cstmt.setString(1, dto.getMemberID());
+	        cstmt.setInt(2, dto.getApID());
+	        cstmt.registerOutParameter(3, java.sql.Types.INTEGER);
+
+	        cstmt.executeUpdate();
+
+	        result = cstmt.getInt(3); 
+
+	        cstmt.close();
+	        conn.close();
+	        
+	        return result; 
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        if (cstmt != null) {
+	            try {
+	                cstmt.close();
+	            } catch (SQLException e) {
+	                e.printStackTrace();
+	            }
+	        }
+	    }
+	    return result;
 	}
 
 	@Override

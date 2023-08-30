@@ -12,6 +12,8 @@ public interface OptionDAO {
 	
 	public abstract int delete (String optionId);
 	
+	public abstract int stockUpdate(OptionDTO dto);
+	
 	//apid가 같은 모든것 찾는거
 	public abstract ArrayList<OptionDTO> serchByApId(int apId);
 

@@ -152,8 +152,8 @@ public class MemberList {
 							}
 						} // end (result == JOptionPane.YES_OPTION)
 
-					} // end clickedGrade.equals("ADMIN")
-						// end !isOnlyAdmin()// 관리자 계정이 하나임
+					} // end clickedGrade.equals
+						// end !isOnlyAdmin
 				} else {
 					JOptionPane.showMessageDialog(null, "관리자 계정이 하나 남아서 권한을 삭제할 수 없습니다");
 				}
@@ -194,13 +194,16 @@ public class MemberList {
 
 	public void memderUserToAdmin() {
 		MemberDTO dto = dao.currentUserInfo(clickedID);
+	
 		dao.memberGrade(dto);
+	
 	}
 
 	public void memderAdminToUser() {
-	
+
 		MemberDTO dto = dao.currentUserInfo(clickedID);
 		dao.memberChangeAdminToUser(dto);
+	
 		
 	}
 

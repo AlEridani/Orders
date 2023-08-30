@@ -24,13 +24,11 @@ public class UserInfo {
 	private JFrame frame;
 	static Session session;
 	private JLabel lblOrderDate;
-	private JLabel lblAppName;
-	private JLabel lblPrice;
-	private JLabel lblQuantity;
-	private JLabel lblOrderNumber;
 	private CloseListener mainCloseListener;
 	private JLabel lblNewLabel_6;
 	private boolean orderlistIsOpen = false;
+	private JLabel lblApName;
+	private int y = 520;
 
 	public UserInfo() {
 		initialize();
@@ -40,7 +38,7 @@ public class UserInfo {
 		session = Session.getInstance();
 
 		frame = new JFrame();
-		frame.setBounds(100, 100, 362, 652);
+		frame.setBounds(100, 100, 362, 990);
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 
@@ -96,32 +94,17 @@ public class UserInfo {
 		separator.setBounds(12, 376, 322, 15);
 		frame.getContentPane().add(separator);
 
-		JLabel lblNewLabel_5 = new JLabel("최근 주문 내역");
+		JLabel lblNewLabel_5 = new JLabel();
+		lblNewLabel_5.setText("최근주문 기록");
 		lblNewLabel_5.setFont(new Font("굴림", Font.BOLD, 15));
 		lblNewLabel_5.setBounds(22, 401, 147, 23);
 		frame.getContentPane().add(lblNewLabel_5);
 
-		lblOrderDate = new JLabel("주문날짜 들어가는곳");
+		lblOrderDate = new JLabel();
+	
 		lblOrderDate.setFont(new Font("굴림", Font.BOLD, 12));
 		lblOrderDate.setBounds(22, 461, 136, 23);
 		frame.getContentPane().add(lblOrderDate);
-
-		lblAppName = new JLabel("제조사 + 물건명 + 물건코드");
-		lblAppName.setFont(new Font("굴림", Font.PLAIN, 15));
-		lblAppName.setBounds(22, 494, 278, 31);
-		frame.getContentPane().add(lblAppName);
-
-		lblPrice = new JLabel("주문금액(총합)");
-		lblPrice.setBounds(108, 535, 147, 15);
-		frame.getContentPane().add(lblPrice);
-
-		lblQuantity = new JLabel("주문갯수");
-		lblQuantity.setBounds(22, 535, 74, 15);
-		frame.getContentPane().add(lblQuantity);
-
-		lblOrderNumber = new JLabel("주문번호 들어가는곳");
-		lblOrderNumber.setBounds(107, 434, 200, 23);
-		frame.getContentPane().add(lblOrderNumber);
 
 		JButton btnNewButton_1 = new JButton("주문내역 전체보기 >");
 		btnNewButton_1.addActionListener(new ActionListener() {
@@ -139,13 +122,22 @@ public class UserInfo {
 				}
 			}
 		});
-		btnNewButton_1.setBounds(0, 590, 346, 23);
+		btnNewButton_1.setBounds(0, 928, 346, 23);
 		frame.getContentPane().add(btnNewButton_1);
-
+		
 		lblNewLabel_6 = new JLabel("주문번호");
 		lblNewLabel_6.setFont(new Font("Gulim", Font.PLAIN, 12));
-		lblNewLabel_6.setBounds(22, 434, 250, 23);
+		lblNewLabel_6.setBounds(26, 434, 250, 23);
 		frame.getContentPane().add(lblNewLabel_6);
+		
+	
+		
+		lblApName = new JLabel();
+		lblApName.setFont(new Font("굴림", Font.PLAIN, 14));
+		lblApName.setBounds(22, 502, 254, 23);
+		frame.getContentPane().add(lblApName);
+		
+		
 
 	}
 
@@ -156,36 +148,39 @@ public class UserInfo {
 
 	// 최근 구매 기록
 	public void lastOrderHistory(Session session) {
-		PurchaseDAO dao = PurchaseDAOImple.getInstance();
-		ArrayList<PurchaseDTO> list = dao.purchaseRecord(session.getDto().getMemberID());
+		OrderDetailDAO dao = OrderDetailDAOImple.getInstance();
+		ArrayList<OrderDetailDTO> list = dao.orderSelect(session.getDto().getMemberID());
 		if (!list.isEmpty()) {
 			int size = list.size();
-			PurchaseDTO dto = list.get(size - 1);
-			
+			OrderDetailDTO dto = list.get(size - 1);
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			String date = sdf.format(dto.getOrderDate());
 			lblOrderDate.setText(date);
+			lblApName.setText(dto.getApName());
+			lblNewLabel_6.setText(String.valueOf("주문번호 " + dto.getOrderNumber()));
+			list.clear();
+			list = dao.lastOrder(session.getDto().getMemberID());
 			
-			lblAppName.setText(dto.getApMfr() + " " + dto.getApName() + " " + dto.getApID());
 			
-			String formattedPrice = NumberFormat.getNumberInstance().format((long) dto.getOrderPrice());
-			lblPrice.setText(formattedPrice + "원");
+			for(int i =0; i < list.size();i++) {//y값만 조지기
+				JLabel lblNewLabel_3 = new JLabel(list.get(i).getOptionName());
+				lblNewLabel_3.setBounds(22, y, 274, 36);
+				frame.getContentPane().add(lblNewLabel_3);
+				
+				String quantityAndPrice = String.valueOf(list.get(i).getQuantity())
+										 + "개/" + numberFormat(list.get(i).getPrice()) +"원";
+				JLabel lblNewLabel_4 = new JLabel(quantityAndPrice);
+				lblNewLabel_4.setBounds(22, y+30, 178, 15);
+				frame.getContentPane().add(lblNewLabel_4);
+				y+=60;
+			}
 			
-			String formattedQunatity = NumberFormat.getNumberInstance().format(dto.getOrderQunatity());
-			lblQuantity.setText(formattedQunatity + "개");
-			
-			lblOrderNumber.setText(String.valueOf(dto.getOrderNumber()));
-			
-			lblNewLabel_6.setText("주문번호");
-			lblNewLabel_6.setFont(new Font("Gulim", Font.PLAIN, 12));
+
 		} else {
 			lblNewLabel_6.setText("이전 주문 내역이 없습니다");
 			lblNewLabel_6.setFont(new Font("굴림", Font.BOLD, 18));
 			lblOrderDate.setVisible(false);
-			lblAppName.setVisible(false);
-			lblPrice.setVisible(false);
-			lblQuantity.setVisible(false);
-			lblOrderNumber.setVisible(false);
+			
 		}
 	}// end showLabelRecord
 
@@ -196,5 +191,9 @@ public class UserInfo {
 	public void setMainCloseListener(CloseListener listener) {
 		this.mainCloseListener = listener;
 	}// end mainCloseListener
-
+	
+	public String numberFormat(int num) {
+		String formatPrice = NumberFormat.getNumberInstance().format(num);
+		return formatPrice;
+	}
 }

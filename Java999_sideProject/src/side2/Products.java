@@ -1,5 +1,6 @@
 package side2;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.SystemColor;
@@ -14,10 +15,12 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -89,7 +92,7 @@ public class Products {
 		JButton btnNewButton = new JButton("구입");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-//				purchaseProcess(dto);
+				purchaseProcess(dto);
 				System.out.println("구입버튼 누른후 끝나는시점");
 			}
 		});
@@ -155,20 +158,28 @@ public class Products {
 		list = dao.serchByApId(dto.getApID());
 		comboBox = new JComboBox<OptionDTO>();
 		for (int i = 0; i < list.size(); i++) {
-			comboBox.addItem(list.get(i));
+			if (list.get(i).getStock() == 0) {
+				comboBox.addItem(list.get(i) + "품절");
+			} else {
+				comboBox.addItem(list.get(i));
+			}
 		}
 		comboBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				OptionDTO selectedOption = (OptionDTO) comboBox.getSelectedItem();
-				if (selectedOption != null && !selectedOptions.contains(selectedOption)) {
-					optionClicked(selectedOption);
-					selectedOptions.add(selectedOption);
+				try {
+					OptionDTO selectedOption = (OptionDTO) comboBox.getSelectedItem();
+
+					if (selectedOption != null && !selectedOptions.contains(selectedOption)) {
+						optionClicked(selectedOption);
+						selectedOptions.add(selectedOption);
+					}
+				} catch (ClassCastException ex) {
+					JOptionPane.showMessageDialog(null, "선택하신 상품은 품절되었습니다.");
 				}
 			}
-
 		});
-		
+
 		comboBox.setBounds(480, 57, 350, 25);
 		frame.getContentPane().add(comboBox);
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -181,32 +192,50 @@ public class Products {
 
 	}
 
-
 	public void show() {
 		frame.setVisible(true);
 	}// end show
 
 	public void purchaseProcess(ApplianceDTO dto) {
-		PurchaseDAO dao = PurchaseDAOImple.getInstance();
+		PurchaseDAO purchaseDAO = PurchaseDAOImple.getInstance();
 		Session session = Session.getInstance();
-		PurchaseDTO pdto = new PurchaseDTO(session.getDto().getMemberID(),dto.getApID());
-		int result = dao.purchase(pdto);
-		if(result == -1) {
-			JOptionPane.showMessageDialog(null, "입력실패");
-		}else {
-			OrderDetailDAO orderDetailDAO = OrderDetailDAOImple.getInstance();
-			//주문번호,옵션코드,주문수량,옵션가격
-			OrderDetailDTO orderDTO = new OrderDetailDTO();
-			for (Map.Entry<OptionDTO, JSpinner> entry : sumOptionPrice.entrySet()) {
-			    OptionDTO option = entry.getKey();
-			    int quantity = (int) entry.getValue().getValue();
-			    orderDTO.getOrderOptions().put(option, quantity);
+		System.out.println("구매 프로세스 멤버 아이디 들어가는지 확인 : " +session.getDto().getMemberID());
+		PurchaseDTO purchaseDTO = new PurchaseDTO(session.getDto().getMemberID(), dto.getApID());
+		int result = purchaseDAO.purchase(purchaseDTO);
+		System.out.println("DTO내에 멤버 아이디 확인 : " + purchaseDTO.getMemberID());
+		int optionInsert = 0;
+
+		OrderDetailDAO orderDetailDAO = OrderDetailDAOImple.getInstance();
+		// 주문번호,옵션코드,주문수량,옵션가격
+		OrderDetailDTO orderDTO = new OrderDetailDTO();
+		OrderDetailDAO orderDAO = OrderDetailDAOImple.getInstance();
+
+		orderDTO.setOrderNumber(result);
+		for (Map.Entry<OptionDTO, JSpinner> entry : sumOptionPrice.entrySet()) {
+			OptionDTO optionDTO = entry.getKey();
+			int quantity = (int) entry.getValue().getValue();
+			String optionId = optionDTO.getOptionId();
+			int optionPrice = optionDTO.getPrice();
+			orderDTO.setOptionId(optionId);
+			orderDTO.setQuantity(quantity);
+			orderDTO.setPrice(optionPrice);
+			optionInsert = orderDAO.orderInsert(orderDTO);
+			if (!(optionInsert == 0) || !(optionInsert == -1)) {
+				int stock = optionDTO.getStock();
+				int newStock = stock - orderDTO.getQuantity();
+				optionDTO.setStock(newStock);
+				OptionDAO optionDAO = OptionDAOImple.getInstance();
+				optionDAO.stockUpdate(optionDTO);
 			}
-			
 		}
-		
-		
-		
+		if (optionInsert == -1 || optionInsert == 0) {
+			JOptionPane.showMessageDialog(null, "구매 실패");
+		} else {
+			JOptionPane.showMessageDialog(null, "구입 성공");
+			frame.dispose();
+
+			// option테이블의 스톡을 줄여야함 어떻게?
+		}
 	}// end
 
 	public void addFrameCloseListener(WindowListener listener) {
@@ -226,8 +255,7 @@ public class Products {
 	public void optionClicked(OptionDTO selectedOption) {
 
 		optionTotalPrice = selectedOption.getPrice();
-		
-		
+
 		lblTotalPrice.setText(longNumberFormat(totalPrice) + "원");
 		JPanel optionPanel = new JPanel();
 		optionPanel.setLayout(null);
@@ -252,17 +280,17 @@ public class Products {
 				Number value = (Number) source.getValue();
 				int intValue = value.intValue();
 				optionTotalPrice = intValue * selectedOption.getPrice();
-				lblOptionTotalPrice.setText(numberFormat(optionTotalPrice)+"원");
+				lblOptionTotalPrice.setText(numberFormat(optionTotalPrice) + "원");
 				totalPriceUpdate();
 				lblTotalPrice.setText(longNumberFormat(totalPrice) + "원");
 			}
 		});
 		spinner.setBounds(22, 104, 59, 22);
 		optionPanel.add(spinner);
-		
+
 		sumOptionPrice.put(selectedOption, spinner);
 		totalPriceUpdate();
-		
+
 		JSeparator separator_3 = new JSeparator();
 		separator_3.setBounds(0, 168, 324, 16);
 		optionPanel.add(separator_3);
@@ -272,10 +300,10 @@ public class Products {
 			public void actionPerformed(ActionEvent e) {
 				selectedOptions.remove(selectedOption);
 				panel.remove(optionPanel);
-				
-		        sumOptionPrice.remove(selectedOption);
-		        
-		        totalPriceUpdate();
+
+				sumOptionPrice.remove(selectedOption);
+
+				totalPriceUpdate();
 				lblTotalPrice.setText(longNumberFormat(totalPrice) + "원");
 				currentY -= 120;
 
@@ -303,12 +331,13 @@ public class Products {
 
 	public void totalPriceUpdate() {
 		totalPrice = 0;
-		    for (Map.Entry<OptionDTO, JSpinner> entry : sumOptionPrice.entrySet()) {
-		        OptionDTO option = entry.getKey();
-		        JSpinner spinner = entry.getValue();
+		for (Map.Entry<OptionDTO, JSpinner> entry : sumOptionPrice.entrySet()) {
+			OptionDTO option = entry.getKey();
+			JSpinner spinner = entry.getValue();
 
-		        totalPrice += option.getPrice() * (int) spinner.getValue();;
-		    }
+			totalPrice += option.getPrice() * (int) spinner.getValue();
+			;
+		}
 
 		lblTotalPrice.setText(longNumberFormat(totalPrice) + "원");
 		panel.revalidate();

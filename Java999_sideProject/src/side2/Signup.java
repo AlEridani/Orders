@@ -331,6 +331,7 @@ public class Signup {
 			lblCheckedId.setText("사용 가능한 아이디 입니다");
 			lblCheckedId.setFont(new Font("굴림", Font.BOLD, 15));
 			lblCheckedId.setForeground(Color.BLACK);
+			textId.setEnabled(false);
 		} else if (result == -1) {// 아이디 중복
 			buttonClickedCheck = false;
 			lblCheckedId.setVisible(true);

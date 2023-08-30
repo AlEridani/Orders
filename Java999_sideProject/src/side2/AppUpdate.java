@@ -167,7 +167,7 @@ public class AppUpdate {
 	}// end addFrameCloseListener
 
 	public void setTextField(OptionDTO selectedDto) {
-		textOptionId.setText(selectedDto.getOptionId());
+		textOptionId.setText(selectedDto.getOptionId());//apid를 재대로 리턴받지 못해서 안되는 상황
 		textOptionName.setText(selectedDto.getApName());
 		textprice.setText(String.valueOf(selectedDto.getPrice()));
 		textStock.setText(String.valueOf(selectedDto.getStock()));
@@ -192,7 +192,8 @@ public class AppUpdate {
 				JOptionPane.showMessageDialog(null, "수정 실패");
 				return false;
 			} else {
-				JOptionPane.showMessageDialog(null, "옵션 수정 성공");
+				JOptionPane.showMessageDialog(null, "수정 성공");
+				frame.dispose();
 				return true;
 
 			}
@@ -204,15 +205,12 @@ public class AppUpdate {
 		String apName = textApName.getText();
 		String apMfr = textApMfr.getText();
 		String apInfo = textAppInfo.getText();
-
+		System.out.println("apInfo 확인 : " + apInfo );
 		ApplianceDTO dto = new ApplianceDTO(apId, apName, apMfr, apInfo);
 		ApplianceDAO dao = ApplianceDAOImple.getInstance();
 		int result = dao.appUpdate(dto);
 		if (result == -1) {
 			JOptionPane.showMessageDialog(null, "수정 실패");
-		} else {
-			JOptionPane.showMessageDialog(null, "수정 성공");
-			
 		}
 
 	}
