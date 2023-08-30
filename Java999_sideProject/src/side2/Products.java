@@ -99,9 +99,9 @@ public class Products {
 		btnNewButton.setBounds(489, 550, 320, 38);
 		frame.getContentPane().add(btnNewButton);
 
-		JLabel lblApName = new JLabel(dto.getApName());
+		JLabel lblApName = new JLabel("<html>" + dto.getApName() + "</html>");
 		lblApName.setFont(new Font("굴림", Font.PLAIN, 18));
-		lblApName.setBounds(32, 125, 349, 25);
+		lblApName.setBounds(32, 125, 349, 50);
 		frame.getContentPane().add(lblApName);
 
 		JLabel lblNewLabel_6 = new JLabel("주문금액");
@@ -110,7 +110,8 @@ public class Products {
 		frame.getContentPane().add(lblNewLabel_6);
 
 		JLabel lblMfr = new JLabel(dto.getApMfr());
-		lblMfr.setBounds(32, 180, 143, 15);
+		lblMfr.setFont(new Font("굴림", Font.PLAIN, 15));
+		lblMfr.setBounds(32, 190, 180, 33);
 		frame.getContentPane().add(lblMfr);
 
 		JLabel lblApId = new JLabel();
@@ -263,7 +264,7 @@ public class Products {
 		JLabel lblNewLabel_3 = new JLabel("<html>" + selectedOption.toString() + "</html>");
 		lblNewLabel_3.setFont(new Font("굴림", Font.PLAIN, 18));
 		lblNewLabel_3.setVerticalAlignment(SwingConstants.TOP);
-		lblNewLabel_3.setBounds(22, 29, 290, 65);
+		lblNewLabel_3.setBounds(22, 29, 270, 70);
 		optionPanel.add(lblNewLabel_3);
 
 		JLabel lblOptionTotalPrice = new JLabel(numberFormat(selectedOption.getPrice()));

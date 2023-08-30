@@ -79,8 +79,8 @@ public class AppInsert {
 		frame.getContentPane().setLayout(null);
 
 		panel = new JPanel();
-		panel.setBounds(23, 299, 950, 250); // 초기 높이를 200으로 설정 (스크롤 패널 높이와 동일)
-		panel.setPreferredSize(new Dimension(950, 1200)); // 초기 선호 크기를 설정
+		panel.setBounds(23, 299, 950, 250); 
+		panel.setPreferredSize(new Dimension(950, 1200));
 		scrollPane_1 = new JScrollPane(panel);
 		panel.setLayout(null);
 		scrollPane_1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -157,8 +157,10 @@ public class AppInsert {
 		JButton btnNewButton_3 = new JButton("확인");
 		btnNewButton_3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (isFieldNotEmpty(tempOptionIdFields) && isFieldNotEmpty(tempOptionNameFields)
-						&& isFieldNotEmpty(tempPriceFields) && isFieldNotEmpty(tempStockFields)) {
+				if (isFieldNotEmpty(tempOptionIdFields) 
+						&& isFieldNotEmpty(tempOptionNameFields)
+						&& isFieldNotEmpty(tempPriceFields) 
+						&& isFieldNotEmpty(tempStockFields)) {
 
 					optionIdFields.addAll(tempOptionIdFields);
 					optionNameFields.addAll(tempOptionNameFields);

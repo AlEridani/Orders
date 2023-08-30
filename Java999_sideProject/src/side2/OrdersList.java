@@ -18,6 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
@@ -61,6 +62,7 @@ public class OrdersList {
 
 		scrollPane = new JScrollPane(panel);
 		scrollPane.setBounds(2, 30, 359, 371);
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		frame.getContentPane().add(scrollPane);
 
 		JLabel lblNewLabel = new JLabel("주문 내역");
@@ -79,18 +81,18 @@ public class OrdersList {
 
 		Session session = Session.getInstance();
 		OrderDetailDAO dao = OrderDetailDAOImple.getInstance();
-		
+
 		LinkedHashMap<Integer, OrderDetailDTO> uniqueOrders = new LinkedHashMap<>();
 		ArrayList<OrderDetailDTO> dataList = dao.orderSelect(session.getDto().getMemberID());
-		for(OrderDetailDTO dto : dataList){
-		    uniqueOrders.put(dto.getOrderNumber(), dto);
+		for (OrderDetailDTO dto : dataList) {
+			uniqueOrders.put(dto.getOrderNumber(), dto);
 		}
 		ArrayList<OrderDetailDTO> list = new ArrayList<>(uniqueOrders.values());
-		
+
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
 		int separatorSpacing = 15;
-		
+
 		int size = list.size();
 		int page = 3;
 		int start = size - 1 - (page * clicked);// 49 46 43 40 size는 50

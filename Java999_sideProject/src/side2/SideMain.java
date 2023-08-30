@@ -90,7 +90,7 @@ public class SideMain {
 
 			}
 		});
-		btnNewButton.setBounds(640, 38, 97, 23);
+		btnNewButton.setBounds(621, 38, 97, 23);
 		frame.getContentPane().add(btnNewButton);
 
 		btnSignup = new JButton("회원가입");
@@ -111,7 +111,7 @@ public class SideMain {
 
 			}
 		});
-		btnSignup.setBounds(781, 38, 97, 23);
+		btnSignup.setBounds(749, 38, 97, 23);
 		frame.getContentPane().add(btnSignup);
 
 		appTableOutput();
@@ -138,7 +138,7 @@ public class SideMain {
 			}
 		});
 		inven.setBackground(Color.LIGHT_GRAY);
-		inven.setBounds(-19, 26, 570, 405);
+		inven.setBounds(0, 25, 570, 405);
 		frame.getContentPane().add(inven);
 
 		JScrollPane scrollPane = new JScrollPane(inven);
@@ -172,7 +172,7 @@ public class SideMain {
 
 			}
 		});
-		btnMyInfo.setBounds(781, 38, 97, 23);
+		btnMyInfo.setBounds(749, 38, 97, 23);
 		frame.getContentPane().add(btnMyInfo);
 
 		btnAdmin = new JButton("유저 관리");
@@ -204,7 +204,7 @@ public class SideMain {
 				userLogout();
 			}
 		});
-		btnLogout.setBounds(640, 38, 97, 23);
+		btnLogout.setBounds(621, 38, 97, 23);
 		frame.getContentPane().add(btnLogout);
 
 		btnAppInsert = new JButton("물품관리");
@@ -379,11 +379,11 @@ public class SideMain {
 		inven.setModel(tableModel);
 	}
 
-	// 테이블만 보여주는 기능
+
 	public void table() {
 
 		int size = appList.size();
-		String[] header = { "번호","상품 명", "제조사", "가격" };
+		String[] header = { "번호","상품명", "제조사", "가격" };
 		Object[][] data = new Object[size][header.length];
 		for (int i = 0; i < size; i++) {
 			data[i][0] = appList.get(i).getApID();

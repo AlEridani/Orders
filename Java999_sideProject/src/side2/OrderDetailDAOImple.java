@@ -22,7 +22,7 @@ public class OrderDetailDAOImple implements OrderDetailDAO {
 		return instance;
 	}
 
-	private static final String URL = "jdbc:oracle:thin:@localhost:1521:xe";
+	private static final String URL = "jdbc:oracle:thin:@172.16.3.3:1521:xe";
 	private static final String USER = "side3";
 	private static final String PW = "123";
 	private static final String TABLE_NAME = "ORDER_DETAIL";

@@ -12,7 +12,7 @@ import oracle.jdbc.driver.OracleDriver;
 
 public class PurchaseDAOImple implements PurchaseDAO {
 
-	private static final String URL = "jdbc:oracle:thin:@localhost:1521:xe";
+	private static final String URL = "jdbc:oracle:thin:@172.16.3.3:1521:xe";
 	private static final String USER = "side3";
 	private static final String PW = "123";
 

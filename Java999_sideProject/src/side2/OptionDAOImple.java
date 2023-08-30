@@ -25,7 +25,7 @@ public class OptionDAOImple implements OptionDAO {
 	
 	
 	private static final String TABLE_NAME = "APP_OPTION";
-	private static final String URL = "jdbc:oracle:thin:@localhost:1521:xe";
+	private static final String URL = "jdbc:oracle:thin:@172.16.3.3:1521:xe";
 	private static final String USER = "side3";
 	private static final String PW = "123";
 	
