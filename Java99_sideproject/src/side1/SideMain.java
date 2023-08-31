@@ -1,4 +1,4 @@
-package side2;
+package side1;
 
 import java.awt.Color;
 import java.awt.EventQueue;
@@ -38,6 +38,7 @@ public class SideMain {
 	private ArrayList<ApplianceDTO> appList;
 	private DefaultTableModel tableModel;
 	private String clickedID;
+	private int clickedNumber;
 	private boolean userInfoIsOpen = false;
 	private boolean loginIsOpen = false;
 	private boolean signupIsOpen = false;
@@ -74,12 +75,9 @@ public class SideMain {
 		initialize();
 	}
 
-	/**
-	 * @wbp.parser.entryPoint
-	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 909, 540);
+		frame.setBounds(100, 100, 1200, 602);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 
@@ -90,7 +88,7 @@ public class SideMain {
 
 			}
 		});
-		btnNewButton.setBounds(621, 38, 97, 23);
+		btnNewButton.setBounds(960, 38, 97, 23);
 		frame.getContentPane().add(btnNewButton);
 
 		btnSignup = new JButton("회원가입");
@@ -111,7 +109,7 @@ public class SideMain {
 
 			}
 		});
-		btnSignup.setBounds(749, 38, 97, 23);
+		btnSignup.setBounds(1075, 38, 97, 23);
 		frame.getContentPane().add(btnSignup);
 
 		appTableOutput();
@@ -121,7 +119,7 @@ public class SideMain {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				int selectedRow = inven.getSelectedRow();
-				int idColumnIndex = inven.getColumnModel().getColumnIndex("번호");
+				int idColumnIndex = inven.getColumnModel().getColumnIndex("제품 ID");
 				clickedID = inven.getModel().getValueAt(selectedRow, idColumnIndex).toString();
 				System.out.println("클릭 : " + clickedID);
 
@@ -138,11 +136,11 @@ public class SideMain {
 			}
 		});
 		inven.setBackground(Color.LIGHT_GRAY);
-		inven.setBounds(0, 25, 570, 405);
+		inven.setBounds(1, 38, 570, 405);
 		frame.getContentPane().add(inven);
 
 		JScrollPane scrollPane = new JScrollPane(inven);
-		scrollPane.setBounds(50, 85, 790, 318);
+		scrollPane.setBounds(50, 85, 1076, 318);
 		frame.getContentPane().add(scrollPane);
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 
@@ -159,9 +157,9 @@ public class SideMain {
 				userInfo.setMainCloseListener(() -> {
 					MemberDAO dao = MemberDAOImple.getInstance();
 					MemberDTO newDto = dao.currentUserInfo(session.getDto().getMemberID());
-					if (newDto != null) {// 회원 수정일때
+					if (newDto != null) {//회원 수정일때
 						session.setDto(newDto);
-					} else {// 회원 탈퇴일때
+					} else {//회원 탈퇴일때
 						setUIVisibilByRole();
 					}
 				});
@@ -172,7 +170,7 @@ public class SideMain {
 
 			}
 		});
-		btnMyInfo.setBounds(749, 38, 97, 23);
+		btnMyInfo.setBounds(1075, 38, 97, 23);
 		frame.getContentPane().add(btnMyInfo);
 
 		btnAdmin = new JButton("유저 관리");
@@ -190,12 +188,12 @@ public class SideMain {
 				memberList.show();
 			}
 		});
-		btnAdmin.setBounds(185, 413, 113, 60);
+		btnAdmin.setBounds(225, 447, 113, 60);
 		frame.getContentPane().add(btnAdmin);
 
 		lblId = new JLabel("아이디 들어가는 자리");
 		lblId.setHorizontalAlignment(JLabel.RIGHT);
-		lblId.setBounds(640, 13, 168, 15);
+		lblId.setBounds(919, 13, 168, 15);
 		frame.getContentPane().add(lblId);
 
 		btnLogout = new JButton("로그아웃");
@@ -204,7 +202,7 @@ public class SideMain {
 				userLogout();
 			}
 		});
-		btnLogout.setBounds(621, 38, 97, 23);
+		btnLogout.setBounds(959, 38, 97, 23);
 		frame.getContentPane().add(btnLogout);
 
 		btnAppInsert = new JButton("물품관리");
@@ -221,11 +219,11 @@ public class SideMain {
 
 			}
 		});
-		btnAppInsert.setBounds(60, 413, 113, 60);
+		btnAppInsert.setBounds(71, 447, 113, 60);
 		frame.getContentPane().add(btnAppInsert);
 
 		textSerch = new JTextField();
-		textSerch.setBounds(283, 39, 162, 21);
+		textSerch.setBounds(450, 39, 162, 21);
 		frame.getContentPane().add(textSerch);
 		textSerch.setColumns(10);
 
@@ -236,7 +234,7 @@ public class SideMain {
 
 			}
 		});
-		btnNewButton_1.setBounds(493, 38, 97, 23);
+		btnNewButton_1.setBounds(650, 38, 97, 23);
 		frame.getContentPane().add(btnNewButton_1);
 
 		JLabel lblNewLabel = new JLabel("전자제품");
@@ -325,34 +323,34 @@ public class SideMain {
 		}
 	}
 
-
+	/**
+	 * 제품의 제고가 있으면 구매창을 띄우는 기능 창이 닫히면 메인 테이블에 변한 ui상태(재고)를 새로고침
+	 */
 	public void showProductForPurchase() {
 		session = Session.getInstance();
 		ApplianceDAO dao = ApplianceDAOImple.getInstance();
-		ApplianceDTO dto = dao.appInfo(clickedID);
-		if(dto == null) {
-			System.out.println("null값 확인");
+		clickedNumber = Integer.parseInt(clickedID);
+		ApplianceDTO dto = dao.appInfo(clickedNumber);
+		if (dto.getApStock() > 0) {
+			Products product = new Products(session, dto);
+			product.addFrameCloseListener(new WindowAdapter() {
+				@Override
+				public void windowClosed(WindowEvent e) {
+					session = Session.getInstance();
+					appTableRefresh();
+				}
+			});
+			product.show();
+		} else {
+			JOptionPane.showMessageDialog(null, "재고가 없습니다");
 		}
-		
-		Products product = new Products(session, dto);
-		product.addFrameCloseListener(new WindowAdapter() {
-			@Override
-			public void windowClosed(WindowEvent e) {
-				session = Session.getInstance();
-				appTableRefresh();
-			}
-		});
-		product.show();
+
 	}
-
-
-
-	
 
 	// 전자제품 테이블 첫 출력
 	public void appTableOutput() {
 		ApplianceDAO dao = ApplianceDAOImple.getInstance();
-		appList = dao.tableSelect(); // 데이터 조회
+		appList = dao.select(); // 데이터 조회
 		table();
 
 	}
@@ -377,17 +375,20 @@ public class SideMain {
 		inven.setModel(tableModel);
 	}
 
-
+	// 테이블만 보여주는 기능
+	@SuppressWarnings("serial")
 	public void table() {
 
 		int size = appList.size();
-		String[] header = { "번호","상품명", "제조사", "가격" };
+		String[] header = { "제품 ID", "제품명", "가격", "제조사", "재고" };
 		Object[][] data = new Object[size][header.length];
 		for (int i = 0; i < size; i++) {
 			data[i][0] = appList.get(i).getApID();
 			data[i][1] = appList.get(i).getApName();
-			data[i][2] = appList.get(i).getApMfr();
-			data[i][3] = appList.get(i).getMainPrice();
+			data[i][2] = numberFormat(appList.get(i).getApPrice()) + "원";
+			data[i][3] = appList.get(i).getApMfr();
+			data[i][4] = appList.get(i).getApStock() + "개";
+
 		}
 		tableModel = new DefaultTableModel(data, header) {
 			public boolean isCellEditable(int row, int column) {

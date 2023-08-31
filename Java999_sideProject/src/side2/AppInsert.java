@@ -219,14 +219,14 @@ public class AppInsert {
 			System.out.println("clickedCount : " + clickedCount);
 			for (int i = 0; i < clickedCount + 1; i++) {
 				
-				String optionId = optionIdFields.get(i).getText();
+				String optionNumber = optionIdFields.get(i).getText();
 				String optionName = optionNameFields.get(i).getText();
 				int price = Integer.parseInt(priceFields.get(i).getText());
 				int stock = Integer.parseInt(stockFields.get(i).getText());
 
 				OptionDAO odao = OptionDAOImple.getInstance();
-				OptionDTO odto = new OptionDTO(optionId, optionName, price, stock, apId, (i + 1));
-
+				OptionDTO odto = new OptionDTO(optionName, price, stock, (i + 1), apId,optionNumber);
+				//옵션이름, 가격, 재고, 순서, AP_ID, 제품 코드
 				result = odao.insert(odto);
 				if (result == -1) {
 					JOptionPane.showMessageDialog(null, "등록에 실패했습니다");

@@ -1,17 +1,66 @@
 package side2;
 
 public class OptionDTO {
-	private String optionId;
+	private int optionId;
 	private String optionName;
 	private int price;
 	private int stock;
 	private int apId;
 	private int position;
+	private String optionNumber;
+	
+
+	public String getOptionName() {
+		return optionName;
+	}
+
+	public void setOptionName(String optionName) {
+		this.optionName = optionName;
+	}
+
+	public OptionDTO(int optionId, String optionName, int price, int stock, int apId, int position,
+			String optionNumber) {
+		this.optionId = optionId;
+		this.optionName = optionName;
+		this.price = price;
+		this.stock = stock;
+		this.apId = apId;
+		this.position = position;
+		this.optionNumber = optionNumber;
+	}
+	
+	public OptionDTO(String optionNumber, String optionName, int price, int stock ) {
+		this.optionNumber = optionNumber;
+		this.optionName = optionName;
+		this.price = price;
+		this.stock = stock;
+	
+	
+	}
+	
+	public OptionDTO(String optionName, int price, int stock, int apId, int position,
+			String optionNumber) {
+	
+		this.optionName = optionName;
+		this.price = price;
+		this.stock = stock;
+		this.apId = apId;
+		this.position = position;
+		this.optionNumber = optionNumber;
+	}
+
+	public String getOptionNumber() {
+		return optionNumber;
+	}
+
+	public void setOptionNumber(String optionNumber) {
+		this.optionNumber = optionNumber;
+	}
 
 	public OptionDTO() {
 	}
 
-	public OptionDTO(String optionId, String apName, int price, int stock, int apId, int position) {
+	public OptionDTO(int optionId, String apName, int price, int stock, int apId, int position) {
 		this.optionId = optionId;
 		this.optionName = apName;
 		this.price = price;
@@ -20,7 +69,7 @@ public class OptionDTO {
 		this.position = position;
 	}
 
-	public OptionDTO(String optionId, String apName, int price, int stock) {
+	public OptionDTO(int optionId, String apName, int price, int stock) {
 		this.optionId = optionId;
 		this.optionName = apName;
 		this.price = price;
@@ -28,11 +77,11 @@ public class OptionDTO {
 
 	}
 
-	public String getOptionId() {
+	public int getOptionId() {
 		return optionId;
 	}
 
-	public void setOptionId(String optionId) {
+	public void setOptionId(int optionId) {
 		this.optionId = optionId;
 	}
 

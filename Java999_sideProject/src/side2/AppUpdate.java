@@ -167,14 +167,14 @@ public class AppUpdate {
 	}// end addFrameCloseListener
 
 	public void setTextField(OptionDTO selectedDto) {
-		textOptionId.setText(selectedDto.getOptionId());//apid를 재대로 리턴받지 못해서 안되는 상황
+		textOptionId.setText(selectedDto.getOptionNumber());
 		textOptionName.setText(selectedDto.getApName());
 		textprice.setText(String.valueOf(selectedDto.getPrice()));
 		textStock.setText(String.valueOf(selectedDto.getStock()));
 	}
 
 	public boolean OptionUpdate() {
-		String optionId = textOptionId.getText();
+		String optionNumber = textOptionId.getText();
 		String OptionName = textOptionName.getText();
 		int price = stringToInteger(textprice.getText());
 		int stock = stringToInteger(textStock.getText());
@@ -186,7 +186,7 @@ public class AppUpdate {
 			JOptionPane.showMessageDialog(null, "가격과 재고는 숫자만 입력할 수 있습니다");
 			return false;
 		} else {
-			OptionDTO dto = new OptionDTO(optionId, OptionName, price, stock);
+			OptionDTO dto = new OptionDTO(optionNumber, OptionName, price, stock);
 			int result = dao.update(dto);
 			if (result == -1) {
 				JOptionPane.showMessageDialog(null, "수정 실패");

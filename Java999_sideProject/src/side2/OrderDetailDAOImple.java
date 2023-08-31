@@ -37,7 +37,8 @@ public class OrderDetailDAOImple implements OrderDetailDAO {
 	private static final String COL_AP_NAME = "AP_NAME";
 	private static final String COL_AP_MFR = "AP_MFR";
 	private static final String COL_OPTION_NAME = "OPTION_NAME";
-	private static final String detailInsert = "INSERT INTO " + TABLE_NAME + " VALUES( " + COL_SEQ2 + ", ?, ?, ?, ?)";
+	
+	private static final String detailInsert = "INSERT INTO " + TABLE_NAME + " VALUES(" + COL_SEQ2 + ", ?, ?, ?, ?)";
 
 	private static final String ORDER_LIST = "SELECT "
 			+ "P.ORDER_NUMBER, "
@@ -52,7 +53,7 @@ public class OrderDetailDAOImple implements OrderDetailDAO {
 			+ "FROM "
 			+ "PURCHASE P "
 			+ "JOIN "
-			+ "APPLIANCE A ON P.AP_ID = A.AP_ID "
+			+ "BUY_INFO A ON P.AP_ID = A.AP_ID "
 			+ "JOIN "
 			+ "ORDER_DETAIL D ON P.ORDER_NUMBER = D.ORDER_NUMBER "
 			+ "JOIN "
@@ -75,7 +76,7 @@ public class OrderDetailDAOImple implements OrderDetailDAO {
 			+ "FROM "
 			+ "PURCHASE P "
 			+ "JOIN "
-			+ "APPLIANCE A ON P.AP_ID = A.AP_ID "
+			+ "BUY_INFO A ON P.AP_ID = A.AP_ID "
 			+ "JOIN "
 			+ "ORDER_DETAIL D ON P.ORDER_NUMBER = D.ORDER_NUMBER "
 			+ "JOIN "
@@ -98,7 +99,7 @@ public class OrderDetailDAOImple implements OrderDetailDAO {
 			+ "FROM "
 			+ "PURCHASE P "
 			+ "JOIN "
-			+ "APPLIANCE A ON P.AP_ID = A.AP_ID "
+			+ "BUY_INFO A ON P.AP_ID = A.AP_ID "
 			+ "JOIN "
 			+ "ORDER_DETAIL D ON P.ORDER_NUMBER = D.ORDER_NUMBER "
 			+ "JOIN "

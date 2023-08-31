@@ -215,9 +215,9 @@ public class Products {
 		for (Map.Entry<OptionDTO, JSpinner> entry : sumOptionPrice.entrySet()) {
 			OptionDTO optionDTO = entry.getKey();
 			int quantity = (int) entry.getValue().getValue();
-			String optionId = optionDTO.getOptionId();
+			String optionNumber = optionDTO.getOptionNumber();
 			int optionPrice = optionDTO.getPrice();
-			orderDTO.setOptionId(optionId);
+			orderDTO.setOptionId(optionNumber);
 			orderDTO.setQuantity(quantity);
 			orderDTO.setPrice(optionPrice);
 			optionInsert = orderDAO.orderInsert(orderDTO);

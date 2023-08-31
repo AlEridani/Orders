@@ -30,14 +30,17 @@ public class OptionDAOImple implements OptionDAO {
 	private static final String PW = "123";
 	
 	private static final String COL_ID = "OPTION_ID";
+	private static final String COL_SEQ3 = "SEQ3.NEXTVAL";
 	private static final String COL_NAME = "OPTION_NAME";
+	private static final String COL_NUMBER = "OPTION_NUMBER";
 	private static final String COL_PRICE = "PRICE";
 	private static final String COL_STOCK = "STOCK";
 	private static final String COL_AP_ID = "AP_ID";
 	private static final String COL_POSITION = "POSITION";
-	
+	//옵션이름, 가격, 재고, 순서, AP_ID,, 제품 코드
 	private static final String OPTION_INSERT = "INSERT INTO " + TABLE_NAME +
-												" VALUES (?,?,?,?,?,?)";
+												" VALUES (" + COL_SEQ3 + ", ?, ?, ?, ?, ?)";
+	
 	private static final String OPTION_BY_APID = "SELECT * FROM " + TABLE_NAME
 												+ " WHERE " + COL_AP_ID + " = ?"
 												+ " ORDER BY " + COL_POSITION;
@@ -63,13 +66,15 @@ public class OptionDAOImple implements OptionDAO {
 			DriverManager.registerDriver(new OracleDriver());
 			Connection conn = DriverManager.getConnection(URL, USER, PW);
 			PreparedStatement pstmt = conn.prepareStatement(OPTION_INSERT);
-			pstmt.setString(1, dto.getOptionId());
-			pstmt.setString(2, dto.getApName());
-			pstmt.setInt(3, dto.getPrice());
-			pstmt.setInt(4, dto.getStock());
-			pstmt.setInt(5, dto.getApId());
-			pstmt.setInt(6, dto.getPosition());
 			
+			//옵션이름, 가격, 재고, 순서, AP_ID, 제품 코드
+
+			pstmt.setString(1, dto.getApName());
+			pstmt.setInt(2, dto.getPrice());
+			pstmt.setInt(3, dto.getStock());
+			pstmt.setInt(4, dto.getApId());
+			pstmt.setInt(5, dto.getPosition());
+			pstmt.setString(6, dto.getOptionNumber());
 			result = pstmt.executeUpdate();
 			System.out.println("insert 쿼리문 이후");
 			
@@ -103,7 +108,7 @@ public class OptionDAOImple implements OptionDAO {
 			pstmt.setString(1, dto.getApName());
 			pstmt.setInt(2, dto.getPrice());
 			pstmt.setInt(3, dto.getStock());
-			pstmt.setString(4, dto.getOptionId());
+			pstmt.setInt(4, dto.getOptionId());
 			
 			result = pstmt.executeUpdate();
 			
@@ -138,7 +143,7 @@ public class OptionDAOImple implements OptionDAO {
 				list = new ArrayList<>();
 				while(rs.next()) {
 					OptionDTO dto = new OptionDTO();
-					dto.setOptionId(rs.getString(COL_ID));
+					dto.setOptionNumber(rs.getString(COL_ID));
 					dto.setApName(rs.getString(COL_NAME));
 					dto.setPrice(rs.getInt(COL_PRICE));
 					dto.setStock(rs.getInt(COL_STOCK));
@@ -166,7 +171,7 @@ public class OptionDAOImple implements OptionDAO {
 				PreparedStatement pstmt = conn.prepareStatement(OPTION_STOCK_UPDATE);
 				System.out.println("업데이트 sql 문 확인 : " + OPTION_UPDATE);
 				pstmt.setInt(1, dto.getStock());
-				pstmt.setString(2, dto.getOptionId());
+				pstmt.setString(2, dto.getOptionNumber());
 				
 				result = pstmt.executeUpdate();
 				
