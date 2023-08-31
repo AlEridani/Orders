@@ -21,6 +21,7 @@ public class AppInsert {
 	private JTextField textApMfr;
 	private JTextField textStock;
 	private JTextField textOption;
+	private String categorie;
 
 	/**
 	 * @wbp.parser.constructor
@@ -104,6 +105,12 @@ public class AppInsert {
 		frame.getContentPane().add(textStock);
 		
 		JComboBox<String> comboBox = new JComboBox<String>();
+		comboBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				categorie = (String) comboBox.getSelectedItem();
+				System.out.println("카테고리 테스트" + categorie);
+			}
+		});
 		
 		comboBox.addItem("TV/영상가전");
 		comboBox.addItem("주방가전");
@@ -268,19 +275,21 @@ public class AppInsert {
 		String apMfr = textApMfr.getText();
 		String apStock = textStock.getText();
 		String optionName = textOption.getText();
-	
-
 		int price = stringToInteger(apPrice);
 		int stock = stringToInteger(apStock);
-		if (apId.isBlank() || apName.isBlank()) {
+		if(categorie== null) {
+			System.out.println("분류 선택안함");
+			JOptionPane.showMessageDialog(null, "상품분류를 선택해주세요");
+		}else if (apId.isBlank() || apName.isBlank()) {
 			JOptionPane.showMessageDialog(null, "상품번호와 상품이름은 필수적으로 입력해야합니다 ");
 		}
+		
 		if (price == -1 || stock == -1) {
 			System.out.println("가격 재고 잘못입력");
 			JOptionPane.showMessageDialog(null, "가격과 재고에는 숫자만 들어갈 수 있습니다");
 			return null;
 		} else {
-			return new ApplianceDTO(apId, apName, price, apMfr, stock);
+			return new ApplianceDTO(apId, apName, price, apMfr, stock, optionName, categorie);
 		}
 	}
 
