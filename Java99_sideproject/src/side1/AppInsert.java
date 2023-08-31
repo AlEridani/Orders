@@ -104,6 +104,7 @@ public class AppInsert {
 		frame.getContentPane().add(textStock);
 		
 		JComboBox<String> comboBox = new JComboBox<String>();
+		
 		comboBox.addItem("TV/영상가전");
 		comboBox.addItem("주방가전");
 		comboBox.addItem("생활가전");
