@@ -28,7 +28,7 @@ public class ApplianceDAOImple implements ApplianceDAO {
 	private static final String COL_OPTION = "OPTION_NAME";
 	private static final String COL_CATEGORIE = "CATEGORIE";
 	private static final String COL_PK_NUMBER = "AP_NUMBER";
-	private static final String COL_SEQ = "SQE2.NEXTVAL";
+	private static final String COL_SEQ = "SEQ2.NEXTVAL";
 
 
 
@@ -38,9 +38,13 @@ public class ApplianceDAOImple implements ApplianceDAO {
 									  " WHERE " + COL_DELETED +" = 0";
 	
 	private static String appSerch = "SELECT * FROM " + TABLE_NAME 
-								   + " WHERE (" + COL_NAME + " LIKE ?"
-								   + " OR " + COL_MFR + " LIKE ?)" 
+								   + " WHERE " + COL_NAME + " LIKE ?"
 								   + " AND " + COL_DELETED + " = 0";
+	
+	private static String appSerchByCate  = "SELECT * FROM " + TABLE_NAME 
+			   + " WHERE " + COL_NAME + " LIKE ?"
+			   + " AND " + COL_CATEGORIE + " LIKE ?" 
+			   + " AND " + COL_DELETED + " = 0";
 
 	private static String appInfo = "SELECT * FROM " + TABLE_NAME + " WHERE " + COL_PK_NUMBER + " = ?";
 
@@ -54,9 +58,9 @@ public class ApplianceDAOImple implements ApplianceDAO {
 									  + COL_PRICE + " = ?, "
 									  + COL_MFR + " = ?, "
 									  + COL_STOCK + " = ?, "
-									  + COL_OPTION + " = ? "
+									  + COL_OPTION + " = ?, "
 									  + COL_CATEGORIE + " = ?"
-									  + "WHERE " + COL_PK_NUMBER + " = ?";
+									  + " WHERE " + COL_PK_NUMBER + " = ?";
 	//나중에 휴지통 기능 구현한다면 사용
 	private static String appDelete = "DELETE FROM " + TABLE_NAME + " WHERE " + COL_PK_NUMBER + " = ?";
 
@@ -151,7 +155,6 @@ public class ApplianceDAOImple implements ApplianceDAO {
 			System.out.println("sql문 : " + appSerch);
 			System.out.println("검색text : " + apName);
 			pstmt.setString(1, apName);
-			pstmt.setString(2, apName);
 			ResultSet rs = pstmt.executeQuery();
 
 			list = new ArrayList<>();
@@ -202,6 +205,7 @@ public class ApplianceDAOImple implements ApplianceDAO {
 			pstmt.setString(5, dto.getOptionName());
 			pstmt.setString(6, dto.getCategorie());
 			pstmt.setInt(7, dto.getApPkNumber());
+//			쿼리문 확인 : UPDATE APPLIANCE SET AP_NAME = ?, AP_PRICE = ?, AP_MFR = ?, AP_STOCK = ?, OPTION_NAME = ? CATEGORIE = ? WHERE AP_NUMBER = ?
 
 			result = pstmt.executeUpdate();
 
@@ -274,5 +278,48 @@ public class ApplianceDAOImple implements ApplianceDAO {
 
 		return null;
 	}//end appInfo
+
+	@Override
+	public ArrayList<ApplianceDTO> serchByCatogorie(String apName, String catecorie) {
+		ArrayList<ApplianceDTO> list = new ArrayList<>();
+		try {
+			DriverManager.registerDriver(new OracleDriver());
+			Connection conn = DriverManager.getConnection(URL, USER, PW);
+			PreparedStatement pstmt = conn.prepareStatement(appSerchByCate);
+			System.out.println("sql문 : " + appSerch);
+			System.out.println("검색text : " + apName);
+			pstmt.setString(1, apName);
+			pstmt.setString(2, catecorie);
+			ResultSet rs = pstmt.executeQuery();
+
+			list = new ArrayList<>();
+			while(rs.next()) {
+				//ID,이름,가격,제조사,재고순
+				ApplianceDTO dto = new ApplianceDTO();
+				dto.setApID(rs.getString(COL_ID));
+				dto.setApName(rs.getString(COL_NAME));
+				dto.setApPrice(rs.getInt(COL_PRICE));
+				dto.setApMfr(rs.getString(COL_MFR));
+				dto.setApStock(rs.getInt(COL_STOCK));
+				dto.setOptionName(rs.getString(COL_OPTION));
+				dto.setCategorie(rs.getString(COL_CATEGORIE));
+				dto.setApPkNumber(rs.getInt(COL_PK_NUMBER));
+				list.add(dto);
+			}
+
+			rs.close();
+			pstmt.close();
+			conn.close();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("sql문 에러 :" + appSelect);
+		}catch (Exception e) {
+			e.printStackTrace();
+		
+		}
+
+		return list;	
+	}
 
 }//end ApplianceDAOImple

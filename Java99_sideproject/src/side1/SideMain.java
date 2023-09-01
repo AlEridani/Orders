@@ -21,6 +21,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.JComboBox;
 
 public class SideMain {
 
@@ -42,10 +43,12 @@ public class SideMain {
 	private boolean userInfoIsOpen = false;
 	private boolean loginIsOpen = false;
 	private boolean signupIsOpen = false;
+	private String categorie;
 
 	private JButton btnAppInsert;
 	private JTextField textSerch;
 	private static SideMain instance = null;
+	private JComboBox comboBox;
 
 	public static SideMain getInstance() {
 		if (instance == null) {
@@ -54,7 +57,6 @@ public class SideMain {
 		return instance;
 	}
 
-	@SuppressWarnings("static-access")
 	public static void main(String[] args) {
 
 		session = session.getInstance();
@@ -70,7 +72,10 @@ public class SideMain {
 		});
 
 	}
-
+	
+	/**
+	 * @wbp.parser.entryPoint
+	 */
 	public SideMain() {
 		initialize();
 	}
@@ -119,7 +124,7 @@ public class SideMain {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				int selectedRow = inven.getSelectedRow();
-				int idColumnIndex = inven.getColumnModel().getColumnIndex("제품 ID");
+				int idColumnIndex = inven.getColumnModel().getColumnIndex("등록번호");
 				clickedID = inven.getModel().getValueAt(selectedRow, idColumnIndex).toString();
 				System.out.println("클릭 : " + clickedID);
 
@@ -247,6 +252,23 @@ public class SideMain {
 		lblNewLabel.setFont(new Font("굴림", Font.BOLD, 23));
 		lblNewLabel.setBounds(50, 13, 199, 62);
 		frame.getContentPane().add(lblNewLabel);
+		
+		comboBox = new JComboBox();
+		comboBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				categorie = (String) comboBox.getSelectedItem();
+				System.out.println("카테고리 테스트" + categorie);
+			}
+		});
+		comboBox.addItem(" ");
+		comboBox.addItem("TV/영상가전");
+		comboBox.addItem("주방가전");
+		comboBox.addItem("생활가전");
+		comboBox.addItem("음향가전");
+		comboBox.addItem("노트북");
+		comboBox.addItem("태블릿/스마트폰");
+		comboBox.setBounds(290, 38, 134, 23);
+		frame.getContentPane().add(comboBox);
 		btnAdmin.setVisible(false);
 
 		setUIVisibilByRole();
@@ -277,7 +299,7 @@ public class SideMain {
 			btnAdmin.setVisible(false);
 			btnSignup.setVisible(true);
 			btnNewButton.setVisible(true);
-			btnAppInsert.setVisible(false);
+			btnAppInsert.setVisible(true);//false로 바꿔두기
 			lblId.setVisible(false);
 			btnLogout.setVisible(false);
 		} else if (session.getGrade().equals("USER")) {// 회원
@@ -364,10 +386,19 @@ public class SideMain {
 
 	}// end refresh
 
-	// 텍스트필드의 문자여을 가져와서 출력
+	
 	public void appSerch() {
 		ApplianceDAO dao = ApplianceDAOImple.getInstance();
-		appList = dao.serch("%" + textSerch.getText() + "%");
+		
+		if(categorie.isBlank()) {
+			System.out.println("카테고리 설정안함");
+			appList = dao.serch("%" + textSerch.getText() + "%");
+		}else {
+			System.out.println("카테고리 설정검색");
+			appList = dao.serchByCatogorie("%" + textSerch.getText() + "%",categorie);
+		}
+		
+		
 		table();
 
 		DefaultTableModel model = (DefaultTableModel) inven.getModel();
@@ -376,18 +407,21 @@ public class SideMain {
 	}
 
 	// 테이블만 보여주는 기능
-	@SuppressWarnings("serial")
 	public void table() {
 
+		
 		int size = appList.size();
-		String[] header = { "제품 ID", "제품명", "가격", "제조사", "재고" };
+		String[] header = {"등록번호","분류", "제품명","제품코드","제조사","옵션", "가격", "재고" };
 		Object[][] data = new Object[size][header.length];
 		for (int i = 0; i < size; i++) {
-			data[i][0] = appList.get(i).getApID();
-			data[i][1] = appList.get(i).getApName();
-			data[i][2] = numberFormat(appList.get(i).getApPrice()) + "원";
-			data[i][3] = appList.get(i).getApMfr();
-			data[i][4] = appList.get(i).getApStock() + "개";
+			data[i][0] = appList.get(i).getApPkNumber();
+			data[i][1] = appList.get(i).getCategorie();
+			data[i][2] = appList.get(i).getApName();
+			data[i][3] = appList.get(i).getApID();
+			data[i][4] = appList.get(i).getApMfr();
+			data[i][5] = appList.get(i).getOptionName();
+			data[i][6] = numberFormat(appList.get(i).getApPrice());
+			data[i][7] = appList.get(i).getApStock();
 
 		}
 		tableModel = new DefaultTableModel(data, header) {

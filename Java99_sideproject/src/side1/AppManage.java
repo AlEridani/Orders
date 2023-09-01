@@ -23,7 +23,6 @@ public class AppManage {
 
 	private JFrame frame;
 	private JTable table;
-	@SuppressWarnings("unused")
 	private DefaultTableModel tableModel;
 	private ArrayList<ApplianceDTO> list;
 	private ApplianceDAO dao;
@@ -79,7 +78,7 @@ public class AppManage {
 			public void mouseClicked(MouseEvent e) {
 				int selectedRow = table.getSelectedRow();
 				//수정해야하는 부분
-				int idColumnIndex = table.getColumnModel().getColumnIndex("제품 ID");
+				int idColumnIndex = table.getColumnModel().getColumnIndex("등록번호");
 				clickedID = table.getModel().getValueAt(selectedRow, idColumnIndex).toString();
 				System.out.println("클릭인덱스: " + clickedID);
 				clickedNumber = Integer.parseInt(clickedID);
@@ -180,18 +179,20 @@ public class AppManage {
 		updateTable(list);
 	}// end appSerchByName()
 
-	@SuppressWarnings("serial")
 	private void updateTable(ArrayList<ApplianceDTO> list) {
-		String[] header = {"제품코드", "제품명", "가격","분류", "제조사", "재고" };
+		String[] header = {"등록번호","분류", "제품명","제품코드",  "제조사","옵션", "가격", "재고" };
 		Object[][] data = new Object[list.size()][header.length];
 		for (int i = 0; i < list.size(); i++) {
 			
-			data[i][0] = list.get(i).getApID();
-			data[i][1] = list.get(i).getApName();
-			data[i][2] = list.get(i).getApPrice();
-			data[i][3] = list.get(i).getCategorie();
+			data[i][0] = list.get(i).getApPkNumber();
+			data[i][1] = list.get(i).getCategorie();
+			data[i][2] = list.get(i).getApName();
+			data[i][3] = list.get(i).getApID();
 			data[i][4] = list.get(i).getApMfr();
-			data[i][5] = list.get(i).getApStock();
+			data[i][5] = list.get(i).getOptionName();
+			data[i][6] = list.get(i).getApPrice();
+			data[i][7] = list.get(i).getApStock();
+			
 		}
 
 		DefaultTableModel tableModel = new DefaultTableModel(data, header) {

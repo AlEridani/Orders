@@ -95,6 +95,7 @@ public class OrdersList {
 		JLabel[] lblOrderDate = new JLabel[size];
 		JLabel[] lblQuantity = new JLabel[size];
 		JLabel[] lblOrderNumber = new JLabel[size];
+		JLabel[] lblOptionName = new JLabel[size];
 		for (int i = start; i > end; i--) {
 			if (i < 0) {
 				JLabel lblOerdersEnd = new JLabel("이전 주문 내역이 없습니다");
@@ -117,13 +118,12 @@ public class OrdersList {
 
 			lblQuantity[i] = new JLabel(numberFormat(list.get(i).getOrderQunatity()) + "개 "
 					+ numberFormat((long) list.get(i).getOrderPrice()) + " 원");
-
 			panel.add(lblQuantity[i]);
+			
 
 			panel.add(Box.createVerticalStrut(separatorSpacing));
 			JSeparator separator = new JSeparator();
 			panel.add(separator);
-
 			panel.add(Box.createVerticalStrut(separatorSpacing));
 
 		} // end for

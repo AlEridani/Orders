@@ -35,7 +35,7 @@ public class ApplianceDTO {
 	}
 
 	public ApplianceDTO(String apID, String apName, int apPrice, String apMfr, int apStock, String optionName,
-			String categorie) {
+			String categorie,int apPkNumber) {
 		this.apID = apID;
 		this.apName = apName;
 		this.apPrice = apPrice;
@@ -43,6 +43,7 @@ public class ApplianceDTO {
 		this.apStock = apStock;
 		this.optionName = optionName;
 		this.categorie =categorie;
+		this.apPkNumber = apPkNumber;
 	}
 
 	public ApplianceDTO() {}

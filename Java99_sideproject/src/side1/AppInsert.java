@@ -22,6 +22,7 @@ public class AppInsert {
 	private JTextField textStock;
 	private JTextField textOption;
 	private String categorie;
+	private int pkNumber;
 
 	/**
 	 * @wbp.parser.constructor
@@ -64,7 +65,7 @@ public class AppInsert {
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ApInsert();
-
+				
 			}
 		});
 		btnNewButton.setBounds(255, 485, 97, 23);
@@ -136,6 +137,7 @@ public class AppInsert {
 	}// end initialize
 
 	private void initialize2(ApplianceDTO dto) {
+		pkNumber = dto.getApPkNumber();
 		frame = new JFrame();
 		frame.setBounds(100, 100, 499, 557);
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -207,20 +209,27 @@ public class AppInsert {
 		frame.getContentPane().add(textStock);
 		
 		JComboBox<String> comboBox = new JComboBox<>();
+		comboBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				categorie = (String) comboBox.getSelectedItem();
+				System.out.println("카테고리 테스트" + categorie);
+			}
+		});
 		comboBox.addItem("TV/영상가전");
 		comboBox.addItem("주방가전");
 		comboBox.addItem("생활가전");
 		comboBox.addItem("음향가전");
 		comboBox.addItem("노트북");
 		comboBox.addItem("태블릿/스마트폰");
-		comboBox.setBounds(120, 304, 82, 22);
+		comboBox.setBounds(120, 304, 120, 22);
+		comboBox.setSelectedItem(dto.getCategorie());
 		frame.getContentPane().add(comboBox);
 		
 		JLabel lblNewLabel_5 = new JLabel("분류");
 		lblNewLabel_5.setBounds(51, 308, 57, 15);
 		frame.getContentPane().add(lblNewLabel_5);
 		
-		textOption = new JTextField();
+		textOption = new JTextField(dto.getOptionName());
 		textOption.setBounds(120, 364, 250, 21);
 		frame.getContentPane().add(textOption);
 		textOption.setColumns(10);
@@ -277,9 +286,10 @@ public class AppInsert {
 		String optionName = textOption.getText();
 		int price = stringToInteger(apPrice);
 		int stock = stringToInteger(apStock);
+		System.out.println("카테고리 " + categorie);
+		System.out.println("ap_id" + apId);
 		if(categorie== null) {
 			System.out.println("분류 선택안함");
-			JOptionPane.showMessageDialog(null, "상품분류를 선택해주세요");
 		}else if (apId.isBlank() || apName.isBlank()) {
 			JOptionPane.showMessageDialog(null, "상품번호와 상품이름은 필수적으로 입력해야합니다 ");
 		}
@@ -289,7 +299,7 @@ public class AppInsert {
 			JOptionPane.showMessageDialog(null, "가격과 재고에는 숫자만 들어갈 수 있습니다");
 			return null;
 		} else {
-			return new ApplianceDTO(apId, apName, price, apMfr, stock, optionName, categorie);
+			return new ApplianceDTO(apId, apName, price, apMfr, stock, optionName, categorie, pkNumber);
 		}
 	}
 

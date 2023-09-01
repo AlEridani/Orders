@@ -9,6 +9,8 @@ public interface ApplianceDAO {
 	public abstract ArrayList<ApplianceDTO> select ();
 
 	public abstract ArrayList<ApplianceDTO> serch(String apName);
+	
+	public abstract ArrayList<ApplianceDTO> serchByCatogorie(String apName, String catecorie);
 
 	public abstract ApplianceDTO appInfo(int index);
 
