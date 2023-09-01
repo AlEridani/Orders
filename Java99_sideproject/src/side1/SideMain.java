@@ -124,7 +124,7 @@ public class SideMain {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				int selectedRow = inven.getSelectedRow();
-				int idColumnIndex = inven.getColumnModel().getColumnIndex("등록번호");
+				int idColumnIndex = inven.getColumnModel().getColumnIndex("제품명");
 				clickedID = inven.getModel().getValueAt(selectedRow, idColumnIndex).toString();
 				System.out.println("클릭 : " + clickedID);
 
@@ -351,10 +351,11 @@ public class SideMain {
 	public void showProductForPurchase() {
 		session = Session.getInstance();
 		ApplianceDAO dao = ApplianceDAOImple.getInstance();
-		clickedNumber = Integer.parseInt(clickedID);
-		ApplianceDTO dto = dao.appInfo(clickedNumber);
-		if (dto.getApStock() > 0) {
-			Products product = new Products(session, dto);
+		
+		ArrayList<ApplianceDTO> list = dao.appPurchaseShow(clickedID);
+		for(int i =0; i < list.size();i++) {
+			Products product = new Products(session, list);
+	
 			product.addFrameCloseListener(new WindowAdapter() {
 				@Override
 				public void windowClosed(WindowEvent e) {
@@ -363,8 +364,6 @@ public class SideMain {
 				}
 			});
 			product.show();
-		} else {
-			JOptionPane.showMessageDialog(null, "재고가 없습니다");
 		}
 
 	}
@@ -372,7 +371,7 @@ public class SideMain {
 	// 전자제품 테이블 첫 출력
 	public void appTableOutput() {
 		ApplianceDAO dao = ApplianceDAOImple.getInstance();
-		appList = dao.select(); // 데이터 조회
+		appList = dao.mainTableShow(); // 데이터 조회
 		table();
 
 	}
@@ -411,17 +410,16 @@ public class SideMain {
 
 		
 		int size = appList.size();
-		String[] header = {"등록번호","분류", "제품명","제품코드","제조사","옵션", "가격", "재고" };
+		String[] header = {"분류", "제품명","제품코드","제조사", "가격", "재고" };
 		Object[][] data = new Object[size][header.length];
 		for (int i = 0; i < size; i++) {
-			data[i][0] = appList.get(i).getApPkNumber();
-			data[i][1] = appList.get(i).getCategorie();
-			data[i][2] = appList.get(i).getApName();
-			data[i][3] = appList.get(i).getApID();
-			data[i][4] = appList.get(i).getApMfr();
-			data[i][5] = appList.get(i).getOptionName();
-			data[i][6] = numberFormat(appList.get(i).getApPrice());
-			data[i][7] = appList.get(i).getApStock();
+			
+			data[i][0] = appList.get(i).getCategorie();
+			data[i][1] = appList.get(i).getApName();
+			data[i][2] = appList.get(i).getApID();
+			data[i][3] = appList.get(i).getApMfr();
+			data[i][4] = numberFormat(appList.get(i).getApPrice());
+			data[i][5] = appList.get(i).getApStock();
 
 		}
 		tableModel = new DefaultTableModel(data, header) {

@@ -47,6 +47,21 @@ public class ApplianceDAOImple implements ApplianceDAO {
 			   + " AND " + COL_DELETED + " = 0";
 
 	private static String appInfo = "SELECT * FROM " + TABLE_NAME + " WHERE " + COL_PK_NUMBER + " = ?";
+	
+	private static String appPurchase = "SELECT * FROM " + TABLE_NAME + " WHERE " 
+										+ COL_NAME + " = ? AND "
+										+ COL_DELETED + " = 0";
+	
+	private static String appMainTable = "SELECT DISTINCT " 
+										+ COL_NAME + ", "
+										+ COL_ID + ", "
+										+ COL_PRICE + ", "
+										+ COL_MFR + ", "
+										+ COL_STOCK + ", "
+										+ COL_CATEGORIE
+										+ " FROM " + TABLE_NAME
+										+ " WHERE " + COL_DELETED + " = 0 ";
+	
 
 	
 	private static String appSoftDelte = "UPDATE " + TABLE_NAME + " SET "
@@ -278,6 +293,46 @@ public class ApplianceDAOImple implements ApplianceDAO {
 
 		return null;
 	}//end appInfo
+	
+	public ArrayList<ApplianceDTO> appPurchaseShow(String apName) {
+		System.out.println("구매 리스트 sql 문 확인 " + appPurchase);
+		ArrayList<ApplianceDTO> list = new ArrayList<>();
+		try {
+			DriverManager.registerDriver(new OracleDriver());
+			Connection conn = DriverManager.getConnection(URL, USER, PW);
+			PreparedStatement pstmt = conn.prepareStatement(appPurchase);
+			System.out.println("sql문 확인 : " + appInfo);
+			System.out.println("매개변수 확인 : " + apName);
+			pstmt.setString(1, apName);
+
+			ResultSet rs = pstmt.executeQuery();
+
+			if(rs.next()) {
+				ApplianceDTO dto = new ApplianceDTO();
+				dto.setApID(rs.getString(COL_ID));
+				dto.setApName(rs.getString(COL_NAME));
+				dto.setApPrice(rs.getInt(COL_PRICE));
+				dto.setApMfr(rs.getString(COL_MFR));
+				dto.setApStock(rs.getInt(COL_STOCK));
+				dto.setOptionName(rs.getString(COL_OPTION));
+				dto.setCategorie(rs.getString(COL_CATEGORIE));
+				dto.setApPkNumber(rs.getInt(COL_PK_NUMBER));
+				list.add(dto);
+			}
+
+			rs.close();
+			pstmt.close();
+			conn.close();
+			return list;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("sql구문 에러");
+		} 
+
+
+		return null;
+	}//end appInfo
 
 	@Override
 	public ArrayList<ApplianceDTO> serchByCatogorie(String apName, String catecorie) {
@@ -320,6 +375,48 @@ public class ApplianceDAOImple implements ApplianceDAO {
 		}
 
 		return list;	
+	}
+
+	@Override
+	public ArrayList<ApplianceDTO> mainTableShow() {
+		System.out.println("메인테이블 SQL문 확인" + appMainTable);
+		ArrayList<ApplianceDTO> list = new ArrayList<>();
+		try {
+			DriverManager.registerDriver(new OracleDriver());
+			Connection conn = DriverManager.getConnection(URL, USER, PW);
+			PreparedStatement pstmt = conn.prepareStatement(appMainTable);
+			ResultSet rs = pstmt.executeQuery();
+			System.out.println(appSelect);
+			
+			while(rs.next()) {
+				ApplianceDTO dto = new ApplianceDTO();
+				dto.setApID(rs.getString(COL_ID));
+				dto.setApName(rs.getString(COL_NAME));
+				dto.setApPrice(rs.getInt(COL_PRICE));
+				dto.setApMfr(rs.getString(COL_MFR));
+				dto.setApStock(rs.getInt(COL_STOCK));
+			
+				dto.setCategorie(rs.getString(COL_CATEGORIE));
+		
+				list.add(dto);
+			}
+
+			conn.close();
+			rs.close();
+			pstmt.close();
+			
+			return list;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("sql문 에러 :" + appSelect);
+		}catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("다른 무언가 에러");
+		}
+
+		return list;
+		
 	}
 
 }//end ApplianceDAOImple
