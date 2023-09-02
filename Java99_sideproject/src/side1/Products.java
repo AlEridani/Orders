@@ -1,5 +1,6 @@
 package side1;
 
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
@@ -25,8 +26,16 @@ import javax.swing.JSeparator;
 import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+
+
+
 
 
 
@@ -40,7 +49,7 @@ public class Products {
 	private JComboBox comboBox;
 	private JPanel panel;
 	private Set<ApplianceDTO> selectedOptions = new HashSet<>();
-	private Map<ApplianceDTO, JSpinner> sumOptionPrice = new HashMap<>();
+	private Map<ApplianceDTO, JSpinner> selectedItems = new HashMap<>();
 	private int currentY = 10;
 	private int optionTotalPrice;
 
@@ -89,7 +98,7 @@ public class Products {
 		JButton btnNewButton = new JButton("구입");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-//				purchaseProcess(dto);
+				 purchaseItems();
 				System.out.println("구입버튼 누른후 끝나는시점");
 			}
 		});
@@ -152,9 +161,29 @@ public class Products {
 		
 
 		comboBox = new JComboBox<ApplianceDTO>();
-		for(int i =0; i < list.size(); i++) {
-			comboBox.addItem(list.get(i));
+		for (int i = 0; i < list.size(); i++) {
+			if (list.get(i).getApStock() == 0) {
+				comboBox.addItem(list.get(i) + "품절");
+			} else {
+				comboBox.addItem(list.get(i));
+			}
 		}
+		
+		comboBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					ApplianceDTO selectedOption = (ApplianceDTO) comboBox.getSelectedItem();
+
+					if (selectedOption != null && !selectedOptions.contains(selectedOption)) {
+						optionClicked(selectedOption);
+						selectedOptions.add(selectedOption);
+					}
+				} catch (ClassCastException ex) {
+					JOptionPane.showMessageDialog(null, "선택하신 상품은 품절되었습니다.");
+				}
+			}
+		});
 	
 
 		comboBox.setBounds(480, 57, 350, 25);
@@ -176,26 +205,45 @@ public class Products {
 	 * 
 	 * 
 	 */
-	public void purchaseProcess(ApplianceDTO apDto) {
-		PurchaseDAO dao = PurchaseDAOImple.getInstance();
+	public void purchaseProcess(ApplianceDTO apDto, int quantity) {
+//		PurchaseDAO dao = PurchaseDAOImple.getInstance();
+//
+//		Session session = Session.getInstance();
+//		System.out.println(apDto.getApPrice());
+//		totalPrice = (long) apDto.getApPrice() * quantity;
+//		System.out.println("구매 메서드의 long확인 : " + totalPrice);
+//		PurchaseDTO dto = new PurchaseDTO(session.getDto().getMemberID(), apDto.getApID(), quantity, totalPrice);
+//		int result = dao.purchase(dto);
+//		if (result == -1) {
+//			JOptionPane.showMessageDialog(null, "구매 실패");
+//		} else {
+//			JOptionPane.showMessageDialog(null, "구매 성공");
+//			apDto.setApStock(apDto.getApStock() - quantity);
+//
+//			ApplianceDAO apDao = ApplianceDAOImple.getInstance();
+//			apDao.appUpdate(apDto);
+//			System.out.println("스톡에서 빼기");
+//			frame.dispose();
+//		}
+		
+		 PurchaseDAO dao = PurchaseDAOImple.getInstance();
+		    Session session = Session.getInstance();
 
-		Session session = Session.getInstance();
-		System.out.println(apDto.getApPrice());
-		totalPrice = (long) apDto.getApPrice() * quantity;
-		System.out.println("구매 메서드의 long확인 : " + totalPrice);
-		PurchaseDTO dto = new PurchaseDTO(session.getDto().getMemberID(), apDto.getApID(), quantity, totalPrice);
-		int result = dao.purchase(dto);
-		if (result == -1) {
-			JOptionPane.showMessageDialog(null, "구매 실패");
-		} else {
-			JOptionPane.showMessageDialog(null, "구매 성공");
-			apDto.setApStock(apDto.getApStock() - quantity);
+		    long totalPrice = (long) apDto.getApPrice() * quantity;
 
-			ApplianceDAO apDao = ApplianceDAOImple.getInstance();
-			apDao.appUpdate(apDto);
-			System.out.println("스톡에서 빼기");
-			frame.dispose();
-		}
+		    PurchaseDTO dto = new PurchaseDTO(session.getDto().getMemberID(), apDto.getApPkNumber(), quantity, totalPrice);
+		    int result = dao.purchase(dto);
+
+		    if (result == -1) {
+		        JOptionPane.showMessageDialog(null, "구매 실패");
+		    } else {
+		        JOptionPane.showMessageDialog(null, "구매 성공");
+		        apDto.setApStock(apDto.getApStock() - quantity);
+
+		        ApplianceDAO apDao = ApplianceDAOImple.getInstance();
+		        apDao.appUpdate(apDto);
+		        frame.dispose();
+		    }
 
 	}// end
 
@@ -212,10 +260,9 @@ public class Products {
 		String formattedPrice = NumberFormat.getNumberInstance().format(num);
 		return formattedPrice;
 	}
-	
 	public void totalPriceUpdate() {
 		totalPrice = 0;
-		for (Map.Entry<ApplianceDTO, JSpinner> entry : sumOptionPrice.entrySet()) {
+		for (Map.Entry<ApplianceDTO, JSpinner> entry : selectedItems.entrySet()) {
 			ApplianceDTO dto = entry.getKey();
 			JSpinner spinner = entry.getValue();
 
@@ -226,6 +273,92 @@ public class Products {
 		lblTotalPrice.setText(longNumberFormat(totalPrice) + "원");
 		panel.revalidate();
 		panel.repaint();
+	}//최종가격 업데이트용
+	
+	public void optionClicked(ApplianceDTO selectedOption) {
+
+		optionTotalPrice = selectedOption.getApPrice();
+
+		lblTotalPrice.setText(longNumberFormat(totalPrice) + "원");
+		JPanel optionPanel = new JPanel();
+		optionPanel.setLayout(null);
+		optionPanel.setBounds(0, currentY, panel.getWidth(), 160);
+		JLabel lblNewLabel_3 = new JLabel("<html>" + selectedOption.toString() + "</html>");
+		lblNewLabel_3.setFont(new Font("굴림", Font.PLAIN, 18));
+		lblNewLabel_3.setVerticalAlignment(SwingConstants.TOP);
+		lblNewLabel_3.setBounds(22, 29, 270, 70);
+		optionPanel.add(lblNewLabel_3);
+
+		JLabel lblOptionTotalPrice = new JLabel(numberFormat(selectedOption.getApPrice()));
+		lblOptionTotalPrice.setFont(new Font("굴림", Font.BOLD, 15));
+		lblOptionTotalPrice.setBounds(22, 136, 193, 22);
+		optionPanel.add(lblOptionTotalPrice);
+
+		SpinnerNumberModel model = new SpinnerNumberModel(1, 1, selectedOption.getApStock(), 1);
+		JSpinner spinner = new JSpinner(model);
+		spinner.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				JSpinner source = (JSpinner) e.getSource();
+				Number value = (Number) source.getValue();
+				int intValue = value.intValue();
+				optionTotalPrice = intValue * selectedOption.getApPrice();
+				lblOptionTotalPrice.setText(numberFormat(optionTotalPrice) + "원");
+				totalPriceUpdate();
+				lblTotalPrice.setText(longNumberFormat(totalPrice) + "원");
+			}
+		});
+		spinner.setBounds(22, 104, 59, 22);
+		optionPanel.add(spinner);
+
+		selectedItems.put(selectedOption, spinner);
+		
+		totalPriceUpdate();
+
+		JSeparator separator_3 = new JSeparator();
+		separator_3.setBounds(0, 168, 324, 16);
+		optionPanel.add(separator_3);
+
+		JButton btnNewButton_2 = new JButton("X");
+		btnNewButton_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				selectedOptions.remove(selectedOption);
+				panel.remove(optionPanel);
+
+				selectedItems.remove(selectedOption);
+
+				totalPriceUpdate();
+				lblTotalPrice.setText(longNumberFormat(totalPrice) + "원");
+				currentY -= 120;
+
+				int preferredHeight = currentY + 160;
+				panel.setPreferredSize(new Dimension(panel.getWidth(), preferredHeight));
+
+				panel.revalidate();
+				panel.repaint();
+			}
+		});
+		btnNewButton_2.setFont(new Font("굴림", Font.BOLD, 8));
+		btnNewButton_2.setBounds(273, 10, 39, 29);
+
+		optionPanel.add(btnNewButton_2);
+
+		panel.add(optionPanel);
+		currentY += 120;
+		int preferredHeight = currentY + 160;
+		panel.setPreferredSize(new Dimension(panel.getWidth(), preferredHeight));
+
+		panel.revalidate();
+		panel.repaint();
+
+	}
+	
+	public void purchaseItems() {
+	    for (Map.Entry<ApplianceDTO, JSpinner> entry : selectedItems.entrySet()) {
+	        ApplianceDTO selectedDto = entry.getKey();
+	        int selectedQuantity = (int) entry.getValue().getValue();  // JSpinner에서 값을 가져옵니다.
+	        purchaseProcess(selectedDto, selectedQuantity);
+	    }
 	}
 
 }// end Products

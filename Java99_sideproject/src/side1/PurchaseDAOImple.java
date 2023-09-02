@@ -21,7 +21,8 @@ public class PurchaseDAOImple implements PurchaseDAO {
 	private static final String COL_APNUMBER = "AP_NUMBER";
 	private static final String COL_AP_NAME = "AP_NAME";
 	private static final String COL_AP_MFR = "AP_MFR";
-	private static final String COL_APID = "COL_APID";
+	private static final String COL_APID = "AP_ID";
+	private static final String COL_OPTION_NAME = "OPTION_NAME";
 	private static final String COL_ORDER_QUANTITY = "ORDER_QUANTITY";
 	private static final String COL_ORDER_PRICE = "ORDER_PRICE";
 	private static final String COL_DATE = "ORDER_DATE";
@@ -41,6 +42,7 @@ public class PurchaseDAOImple implements PurchaseDAO {
 												+ " a." + COL_APID 
 												+ ", a." + COL_AP_NAME
 												+ ", a." + COL_AP_MFR 
+												+ ", a." + COL_OPTION_NAME
 												+ ", p." + COL_DATE 
 												+ ", p." + COL_ORDER_QUANTITY 
 												+ ", p." + COL_ORDER_PRICE 
@@ -103,7 +105,8 @@ public class PurchaseDAOImple implements PurchaseDAO {
 				PurchaseDTO dto = new PurchaseDTO();
 				dto.setOrderNumber(rs.getInt(COL_ORDER_NUMBER));
 				dto.setOrderDate(rs.getDate(COL_DATE));
-				dto.setApID(rs.getString(COL_APNUMBER));
+				dto.setApID(rs.getString(COL_APID));
+				dto.setOptionName(rs.getString(COL_OPTION_NAME));
 				dto.setApName(rs.getString(COL_AP_NAME));
 				dto.setApMfr(rs.getString(COL_AP_MFR));
 				dto.setOrderQunatity(rs.getInt(COL_ORDER_QUANTITY));

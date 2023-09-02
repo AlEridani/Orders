@@ -9,9 +9,18 @@ public class PurchaseDTO {
 	private String apName;
 	private String apMfr;
 	private int apNumber;
+	private String optionName;
 
 	public int getApNumber() {
 		return apNumber;
+	}
+
+	public String getOptionName() {
+		return optionName;
+	}
+
+	public void setOptionName(String optionName) {
+		this.optionName = optionName;
 	}
 
 	public void setApNumber(int apNumber) {
@@ -25,9 +34,9 @@ public class PurchaseDTO {
 	public PurchaseDTO() {
 	}
 
-	public PurchaseDTO(String memberID, String apID, int orderQunatity, long orderPrice) {
+	public PurchaseDTO(String memberID, int apNumber, int orderQunatity, long orderPrice) {
 		this.memberID = memberID;
-		this.apID = apID;
+		this.apNumber = apNumber;
 		this.orderQunatity = orderQunatity;
 		this.orderPrice = orderPrice;
 

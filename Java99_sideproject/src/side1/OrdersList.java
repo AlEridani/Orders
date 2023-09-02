@@ -1,6 +1,7 @@
 package side1;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -113,8 +114,12 @@ public class OrdersList {
 			lblOrderDate[i] = new JLabel(date);
 			panel.add(lblOrderDate[i]);
 
-			lblName[i] = new JLabel(list.get(i).getApMfr() + " " + list.get(i).getApName());
+			lblName[i] = new JLabel("<html>" + list.get(i).getApName() + "</html>");
+			lblName[i].setPreferredSize(new Dimension(100, 40));
+
 			panel.add(lblName[i]);
+			lblOptionName[i] = new JLabel(list.get(i).getOptionName());
+			panel.add(lblOptionName[i]);
 
 			lblQuantity[i] = new JLabel(numberFormat(list.get(i).getOrderQunatity()) + "개 "
 					+ numberFormat((long) list.get(i).getOrderPrice()) + " 원");

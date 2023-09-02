@@ -31,6 +31,7 @@ public class UserInfo {
 	private CloseListener mainCloseListener;
 	private JLabel lblNewLabel_6;
 	private boolean orderlistIsOpen = false;
+	private JLabel lblOption;
 
 	public UserInfo() {
 		initialize();
@@ -40,7 +41,7 @@ public class UserInfo {
 		session = Session.getInstance();
 
 		frame = new JFrame();
-		frame.setBounds(100, 100, 362, 652);
+		frame.setBounds(100, 100, 362, 662);
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 
@@ -106,17 +107,17 @@ public class UserInfo {
 		lblOrderDate.setBounds(22, 461, 136, 23);
 		frame.getContentPane().add(lblOrderDate);
 
-		lblAppName = new JLabel("제조사 + 물건명 + 물건코드");
+		lblAppName = new JLabel("주문 글");
 		lblAppName.setFont(new Font("굴림", Font.PLAIN, 15));
-		lblAppName.setBounds(22, 494, 278, 31);
+		lblAppName.setBounds(22, 482, 278, 40);
 		frame.getContentPane().add(lblAppName);
 
 		lblPrice = new JLabel("주문금액(총합)");
-		lblPrice.setBounds(108, 535, 147, 15);
+		lblPrice.setBounds(108, 563, 147, 15);
 		frame.getContentPane().add(lblPrice);
 
 		lblQuantity = new JLabel("주문갯수");
-		lblQuantity.setBounds(22, 535, 74, 15);
+		lblQuantity.setBounds(22, 563, 74, 15);
 		frame.getContentPane().add(lblQuantity);
 
 		lblOrderNumber = new JLabel("주문번호 들어가는곳");
@@ -139,13 +140,17 @@ public class UserInfo {
 				}
 			}
 		});
-		btnNewButton_1.setBounds(0, 590, 346, 23);
+		btnNewButton_1.setBounds(0, 600, 346, 23);
 		frame.getContentPane().add(btnNewButton_1);
 
 		lblNewLabel_6 = new JLabel("주문번호");
 		lblNewLabel_6.setFont(new Font("Gulim", Font.PLAIN, 12));
 		lblNewLabel_6.setBounds(22, 434, 250, 23);
 		frame.getContentPane().add(lblNewLabel_6);
+		
+		lblOption = new JLabel("옵션명");
+		lblOption.setBounds(22, 526, 266, 15);
+		frame.getContentPane().add(lblOption);
 
 	}
 
@@ -166,7 +171,9 @@ public class UserInfo {
 			String date = sdf.format(dto.getOrderDate());
 			lblOrderDate.setText(date);
 			
-			lblAppName.setText(dto.getApMfr() + " " + dto.getApName() + " " + dto.getApID());
+			lblAppName.setText("<html>" + dto.getApName() + "</html>");
+			
+			lblOption.setText(dto.getOptionName());
 			
 			String formattedPrice = NumberFormat.getNumberInstance().format((long) dto.getOrderPrice());
 			lblPrice.setText(formattedPrice + "원");
@@ -196,5 +203,4 @@ public class UserInfo {
 	public void setMainCloseListener(CloseListener listener) {
 		this.mainCloseListener = listener;
 	}// end mainCloseListener
-
 }
