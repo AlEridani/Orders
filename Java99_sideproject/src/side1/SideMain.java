@@ -351,11 +351,9 @@ public class SideMain {
 	public void showProductForPurchase() {
 		session = Session.getInstance();
 		ApplianceDAO dao = ApplianceDAOImple.getInstance();
-		
+		System.out.println("clickedID 확인용 : " + clickedID);
 		ArrayList<ApplianceDTO> list = dao.appPurchaseShow(clickedID);
-		for(int i =0; i < list.size();i++) {
-			Products product = new Products(session, list);
-	
+		Products product = new Products(session, list);
 			product.addFrameCloseListener(new WindowAdapter() {
 				@Override
 				public void windowClosed(WindowEvent e) {
@@ -363,9 +361,7 @@ public class SideMain {
 					appTableRefresh();
 				}
 			});
-			product.show();
-		}
-
+		product.show();
 	}
 
 	// 전자제품 테이블 첫 출력

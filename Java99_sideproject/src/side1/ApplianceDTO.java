@@ -98,8 +98,7 @@ public class ApplianceDTO {
 
 	@Override
 	public String toString() {
-		return "ApplianceDTO [apID=" + apID + ", apName=" + apName + ", apPrice=" + apPrice + ", apMfr=" + apMfr
-				+ ", apStock=" + apStock + "]";
+		return apMfr + " " + optionName + " (" + apPrice +"원) " ;
 	}
 
 }

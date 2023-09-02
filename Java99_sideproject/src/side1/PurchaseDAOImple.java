@@ -18,9 +18,10 @@ public class PurchaseDAOImple implements PurchaseDAO {
 	private static final String COL_ORDER_NUMBER = "ORDER_NUMBER";
 	private static final String COL_ORDER_NUMBER_SQE = "SEQ1.NEXTVAL";
 	private static final String COL_SESSION_ID = "MEMBER_ID";
-	private static final String COL_APID = "AP_ID";
+	private static final String COL_APNUMBER = "AP_NUMBER";
 	private static final String COL_AP_NAME = "AP_NAME";
 	private static final String COL_AP_MFR = "AP_MFR";
+	private static final String COL_APID = "COL_APID";
 	private static final String COL_ORDER_QUANTITY = "ORDER_QUANTITY";
 	private static final String COL_ORDER_PRICE = "ORDER_PRICE";
 	private static final String COL_DATE = "ORDER_DATE";
@@ -28,7 +29,7 @@ public class PurchaseDAOImple implements PurchaseDAO {
 	private static final String purchaseSql = "INSERT INTO " + TABLE_NAME +
 											" (" + COL_ORDER_NUMBER + ", " 
 											 + COL_SESSION_ID + ", " 
-											 + COL_APID + ", " 
+											 + COL_APNUMBER + ", " 
 											 + COL_ORDER_QUANTITY + ", " 
 											 + COL_ORDER_PRICE + ")" 
 											 + " VALUES (" 
@@ -46,7 +47,7 @@ public class PurchaseDAOImple implements PurchaseDAO {
 												+ ", p." + COL_ORDER_NUMBER
 												+ " FROM APPLIANCE a join " 
 												+ TABLE_NAME + " p" 
-												+ " ON a." + COL_APID + " = p." + COL_APID 
+												+ " ON a." + COL_APNUMBER + " = p." + COL_APNUMBER 
 												+ " WHERE p."+ COL_SESSION_ID + " = ?"
 												+ " ORDER BY " + COL_ORDER_NUMBER;
 
@@ -72,7 +73,7 @@ public class PurchaseDAOImple implements PurchaseDAO {
 			PreparedStatement pstmt = conn.prepareStatement(purchaseSql);
 			System.out.println(purchaseSelect);
 			pstmt.setString(1, dto.getMemberID());
-			pstmt.setString(2, dto.getApID());
+			pstmt.setInt(2, dto.getApNumber());
 			pstmt.setInt(3, dto.getOrderQunatity());
 			pstmt.setLong(4, dto.getOrderPrice());
 			result = pstmt.executeUpdate();
@@ -102,7 +103,7 @@ public class PurchaseDAOImple implements PurchaseDAO {
 				PurchaseDTO dto = new PurchaseDTO();
 				dto.setOrderNumber(rs.getInt(COL_ORDER_NUMBER));
 				dto.setOrderDate(rs.getDate(COL_DATE));
-				dto.setApID(rs.getString(COL_APID));
+				dto.setApID(rs.getString(COL_APNUMBER));
 				dto.setApName(rs.getString(COL_AP_NAME));
 				dto.setApMfr(rs.getString(COL_AP_MFR));
 				dto.setOrderQunatity(rs.getInt(COL_ORDER_QUANTITY));

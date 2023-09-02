@@ -138,10 +138,6 @@ public class Products {
 		});
 		btnNewButton_1.setBounds(328, 472, 80, 23);
 		frame.getContentPane().add(btnNewButton_1);
-
-		JTextArea textArea = new JTextArea();
-		textArea.setBounds(23, 233, 410, 162);
-		frame.getContentPane().add(textArea);
 		
 
 		panel = new JPanel();
@@ -150,12 +146,14 @@ public class Products {
 		scrollPane.setBounds(480, 110, 350, 337);
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		frame.getContentPane().add(scrollPane);
+		for(ApplianceDTO x : list) {
+			System.out.println(x);
+		}
+		
 
-
-		ArrayList<ApplianceDTO> item = dao.appPurchaseShow(list.get(0).getApName());
 		comboBox = new JComboBox<ApplianceDTO>();
 		for(int i =0; i < list.size(); i++) {
-			comboBox.addItem(item.get(i));
+			comboBox.addItem(list.get(i));
 		}
 	
 

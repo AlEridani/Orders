@@ -186,7 +186,7 @@ public class AppInsert {
 		textApId.setBounds(120, 45, 250, 21);
 		frame.getContentPane().add(textApId);
 		textApId.setColumns(10);
-		textApId.setEnabled(false);
+		
 
 		textApName = new JTextField(dto.getApName());
 		textApName.setColumns(10);

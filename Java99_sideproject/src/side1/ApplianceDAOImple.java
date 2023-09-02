@@ -37,14 +37,34 @@ public class ApplianceDAOImple implements ApplianceDAO {
 	private static String appSelect = "SELECT * FROM " + TABLE_NAME + 
 									  " WHERE " + COL_DELETED +" = 0";
 	
-	private static String appSerch = "SELECT * FROM " + TABLE_NAME 
-								   + " WHERE " + COL_NAME + " LIKE ?"
-								   + " AND " + COL_DELETED + " = 0";
+	private static String appSerch =  "SELECT "
+		    + "MIN(" + COL_ID + ") AS " + COL_ID + ", "
+		    + COL_NAME + ", "
+		    + "MIN(" + COL_PRICE + ") AS " + COL_PRICE + ", "
+		    + "MIN(" + COL_MFR + ") AS " + COL_MFR + ", "
+		    + "MIN(" + COL_STOCK + ") AS " + COL_STOCK + ", "
+		    + "MIN(" + COL_DELETED + ") AS " + COL_DELETED + ", "
+		    + "MIN(" + COL_OPTION + ") AS " + COL_OPTION + ", "
+		    + "MIN(" + COL_CATEGORIE + ") AS " + COL_CATEGORIE
+		    + " FROM " + TABLE_NAME
+		    + " WHERE " + COL_NAME + " LIKE ?"
+		    + " AND " + COL_DELETED + " = 0"
+		    + " GROUP BY " + COL_NAME;
 	
-	private static String appSerchByCate  = "SELECT * FROM " + TABLE_NAME 
-			   + " WHERE " + COL_NAME + " LIKE ?"
-			   + " AND " + COL_CATEGORIE + " LIKE ?" 
-			   + " AND " + COL_DELETED + " = 0";
+	private static String appSerchByCate  = "SELECT "
+		    + "MIN(" + COL_ID + ") AS " + COL_ID + ", "
+		    + COL_NAME + ", "
+		    + "MIN(" + COL_PRICE + ") AS " + COL_PRICE + ", "
+		    + "MIN(" + COL_MFR + ") AS " + COL_MFR + ", "
+		    + "MIN(" + COL_STOCK + ") AS " + COL_STOCK + ", "
+		    + "MIN(" + COL_DELETED + ") AS " + COL_DELETED + ", "
+		    + "MIN(" + COL_OPTION + ") AS " + COL_OPTION + ", "
+		    + "MIN(" + COL_CATEGORIE + ") AS " + COL_CATEGORIE
+		    + " FROM " + TABLE_NAME
+		    + " WHERE " + COL_NAME + " LIKE ?"
+		    + " AND " + COL_CATEGORIE + " LIKE ?"
+		    + " AND " + COL_DELETED + " = 0"
+		    + " GROUP BY " + COL_NAME;
 
 	private static String appInfo = "SELECT * FROM " + TABLE_NAME + " WHERE " + COL_PK_NUMBER + " = ?";
 	
@@ -52,16 +72,15 @@ public class ApplianceDAOImple implements ApplianceDAO {
 										+ COL_NAME + " = ? AND "
 										+ COL_DELETED + " = 0";
 	
-	private static String appMainTable = "SELECT DISTINCT " 
-										+ COL_NAME + ", "
-										+ COL_ID + ", "
-										+ COL_PRICE + ", "
-										+ COL_MFR + ", "
-										+ COL_STOCK + ", "
-										+ COL_CATEGORIE
-										+ " FROM " + TABLE_NAME
-										+ " WHERE " + COL_DELETED + " = 0 ";
-	
+	private static String appMainTable = "SELECT MIN(" + COL_ID + ") AS " + COL_ID + ", "
+		    + COL_NAME + ", "
+		    + "MIN(" + COL_PRICE + ") AS " + COL_PRICE + ", "
+		    + "MIN(" + COL_MFR + ") AS " + COL_MFR + ", "
+		    + "MIN(" + COL_STOCK + ") AS " + COL_STOCK + ", "
+		    + "MIN(" + COL_CATEGORIE + ") AS " + COL_CATEGORIE
+		    + " FROM " + TABLE_NAME
+		    + " WHERE " + COL_DELETED + " = 0"
+		    + " GROUP BY " + COL_NAME;
 
 	
 	private static String appSoftDelte = "UPDATE " + TABLE_NAME + " SET "
@@ -183,7 +202,6 @@ public class ApplianceDAOImple implements ApplianceDAO {
 				dto.setApStock(rs.getInt(COL_STOCK));
 				dto.setOptionName(rs.getString(COL_OPTION));
 				dto.setCategorie(rs.getString(COL_CATEGORIE));
-				dto.setApPkNumber(rs.getInt(COL_PK_NUMBER));
 				list.add(dto);
 			}
 
@@ -307,7 +325,7 @@ public class ApplianceDAOImple implements ApplianceDAO {
 
 			ResultSet rs = pstmt.executeQuery();
 
-			if(rs.next()) {
+			while(rs.next()) {
 				ApplianceDTO dto = new ApplianceDTO();
 				dto.setApID(rs.getString(COL_ID));
 				dto.setApName(rs.getString(COL_NAME));
@@ -331,8 +349,8 @@ public class ApplianceDAOImple implements ApplianceDAO {
 		} 
 
 
-		return null;
-	}//end appInfo
+		return list;
+	}//end appPurchaseShow
 
 	@Override
 	public ArrayList<ApplianceDTO> serchByCatogorie(String apName, String catecorie) {
@@ -358,7 +376,6 @@ public class ApplianceDAOImple implements ApplianceDAO {
 				dto.setApStock(rs.getInt(COL_STOCK));
 				dto.setOptionName(rs.getString(COL_OPTION));
 				dto.setCategorie(rs.getString(COL_CATEGORIE));
-				dto.setApPkNumber(rs.getInt(COL_PK_NUMBER));
 				list.add(dto);
 			}
 

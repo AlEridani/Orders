@@ -8,6 +8,15 @@ public class PurchaseDTO {
 	private String apID;
 	private String apName;
 	private String apMfr;
+	private int apNumber;
+
+	public int getApNumber() {
+		return apNumber;
+	}
+
+	public void setApNumber(int apNumber) {
+		this.apNumber = apNumber;
+	}
 
 	private int orderQunatity;
 	private long orderPrice;
