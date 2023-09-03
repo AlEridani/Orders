@@ -116,7 +116,7 @@ public class OrdersList {
 
 			lblName[i] = new JLabel("<html>" + list.get(i).getApName() + "</html>");
 			lblName[i].setPreferredSize(new Dimension(100, 40));
-
+			//커밋용
 			panel.add(lblName[i]);
 			lblOptionName[i] = new JLabel(list.get(i).getOptionName());
 			panel.add(lblOptionName[i]);
